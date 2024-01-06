@@ -19,6 +19,10 @@ oci_platforms := all
 # To get latest SHA run crane digest gcr.io/distroless/static:nonroot
 base_image_static := gcr.io/distroless/static@sha256:91ca4720011393f4d4cab3a01fa5814ee2714b7d40e6c74f2505f74168398ca9
 
+# Use custom apko-built image as minimal base image to package the manager binary
+# To get latest SHA run crane digest ghcr.io/inteon/apko-test/base-csi:latest
+base_image_csi-driver-static := ghcr.io/inteon/apko-test/base-csi@sha256:13caf32dfab2dd55f0031c4d11c1ee8ee81f1421d1d9504a4cebe364471a852b
+
 ifndef bin_dir
 $(error bin_dir is not set)
 endif
@@ -38,6 +42,8 @@ $(call fatal_if_undefined,oci_$1_image_name_development)
 
 ifeq ($(oci_$1_base_image_flavor),static)
     oci_$1_base_image := $(base_image_static)
+else ifeq ($(oci_$1_base_image_flavor),csi-driver-static)
+    oci_$1_base_image := $(base_image_csi-driver-static)
 else
     $$(error oci_$1_base_image_flavor has unknown value "$(oci_$1_base_image_flavor)")
 endif
