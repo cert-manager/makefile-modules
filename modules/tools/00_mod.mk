@@ -100,7 +100,7 @@ TOOLS += etcd=$(KUBEBUILDER_ASSETS_VERSION)
 TOOLS += kube-apiserver=$(KUBEBUILDER_ASSETS_VERSION)
 
 # https://go.dev/dl/
-VENDORED_GO_VERSION := 1.21.5
+VENDORED_GO_VERSION := 1.21.6
 
 # Print the go version which can be used in GH actions
 .PHONY: print-go-version
