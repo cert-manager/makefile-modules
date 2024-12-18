@@ -89,7 +89,7 @@ upgrade-kind-images: | $(NEEDS_CRANE)
 # version has been bumped.
 .PHONY: learn-tools-shas
 learn-tools-shas: | $(NEEDS_CRANE)
-	./scripts/learn_tools_shas.sh tools vendor-go
+	./scripts/learn_tools_shas.sh tools _bin/tools/go
 	@CRANE=$(CRANE) \
 		./scripts/learn_kind_images.sh
 
