@@ -27,7 +27,7 @@ script_dir=$(dirname "$(realpath "$0")")
 tool_targets=("$@")
 if [ ${#tool_targets[@]} -eq 0 ]; then
     echo "Usage: $0 <tool-target>..."
-    echo "Example 1: $0 tools vendor-go"
+    echo "Example 1: $0 tools _bin/tools/go"
     echo "Example 2: $0 _bin/tools/helm _bin/tools/kubectl"
     exit 1
 fi
