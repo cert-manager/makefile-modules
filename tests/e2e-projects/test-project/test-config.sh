@@ -33,4 +33,8 @@ targets_to_run+=(
     "docker-tarball-manager"
     "help"
     "verify"
+    "_bin/tools/kind"
+    "_bin/tools/kubectl"
+    "_bin/tools/etcd"
+    "vendor-go"
 )
