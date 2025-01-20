@@ -52,37 +52,37 @@ NEEDS_CTR = __require-ctr
 
 tools :=
 # https://github.com/helm/helm/releases
-tools += helm=v3.15.4
+tools += helm=v3.17.0
 # https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl
-tools += kubectl=v1.31.0
+tools += kubectl=v1.32.1
 # https://github.com/kubernetes-sigs/kind/releases
 tools += kind=v0.26.0
 # https://www.vaultproject.io/downloads
-tools += vault=1.17.3
+tools += vault=1.18.3
 # https://github.com/Azure/azure-workload-identity/releases
-tools += azwi=v1.3.0
+tools += azwi=v1.4.1
 # https://github.com/kyverno/kyverno/releases
-tools += kyverno=v1.12.5
+tools += kyverno=v1.12.7
 # https://github.com/mikefarah/yq/releases
-tools += yq=v4.44.3
+tools += yq=v4.45.1
 # https://github.com/ko-build/ko/releases
-tools += ko=0.16.0
+tools += ko=0.17.1
 # https://github.com/protocolbuffers/protobuf/releases
-tools += protoc=27.3
+tools += protoc=29.3
 # https://github.com/aquasecurity/trivy/releases
-tools += trivy=v0.54.1
+tools += trivy=v0.58.2
 # https://github.com/vmware-tanzu/carvel-ytt/releases
-tools += ytt=v0.50.0
+tools += ytt=v0.51.1
 # https://github.com/rclone/rclone/releases
-tools += rclone=v1.67.0
+tools += rclone=v1.69.0
 # https://github.com/istio/istio/releases
-tools += istioctl=1.24.0
+tools += istioctl=1.24.1
 
 ### go packages
 # https://pkg.go.dev/sigs.k8s.io/controller-tools/cmd/controller-gen?tab=versions
-tools += controller-gen=v0.16.1
+tools += controller-gen=v0.17.1
 # https://pkg.go.dev/golang.org/x/tools/cmd/goimports?tab=versions
-tools += goimports=v0.24.0
+tools += goimports=v0.29.0
 # https://pkg.go.dev/github.com/google/go-licenses/licenses?tab=versions
 tools += go-licenses=706b9c60edd424a8b6d253fe10dfb7b8e942d4a5
 # https://pkg.go.dev/gotest.tools/gotestsum?tab=versions
@@ -90,19 +90,19 @@ tools += gotestsum=v1.12.0
 # https://pkg.go.dev/sigs.k8s.io/kustomize/kustomize/v4?tab=versions
 tools += kustomize=v4.5.7
 # https://pkg.go.dev/github.com/itchyny/gojq?tab=versions
-tools += gojq=v0.12.16
+tools += gojq=v0.12.17
 # https://pkg.go.dev/github.com/google/go-containerregistry/pkg/crane?tab=versions
-tools += crane=v0.20.2
+tools += crane=v0.20.3
 # https://pkg.go.dev/google.golang.org/protobuf/cmd/protoc-gen-go?tab=versions
-tools += protoc-gen-go=v1.34.2
+tools += protoc-gen-go=v1.36.3
 # https://pkg.go.dev/github.com/sigstore/cosign/v2/cmd/cosign?tab=versions
-tools += cosign=v2.4.0
+tools += cosign=v2.4.1
 # https://pkg.go.dev/github.com/cert-manager/boilersuite?tab=versions
 tools += boilersuite=v0.1.0
 # https://pkg.go.dev/github.com/princjef/gomarkdoc/cmd/gomarkdoc?tab=versions
 tools += gomarkdoc=v1.1.0
 # https://pkg.go.dev/oras.land/oras/cmd/oras?tab=versions
-tools += oras=v1.2.0
+tools += oras=v1.2.2
 # https://pkg.go.dev/github.com/onsi/ginkgo/v2/ginkgo?tab=versions
 # The gingko version should be kept in sync with the version used in code.
 # If there is no go.mod file (which is only the case for the makefile-modules
@@ -118,29 +118,29 @@ tools += goreleaser=v1.26.2
 # using an old version (0.100.0, Jan 2024) because all of the latest versions
 # use a replace statement, and thus cannot be installed using `go build`.
 tools += syft=v0.100.0
-# https://github.com/cert-manager/helm-tool
+# https://github.com/cert-manager/helm-tool/releases
 tools += helm-tool=v0.5.3
-# https://github.com/cert-manager/cmctl
+# https://github.com/cert-manager/cmctl/releases
 tools += cmctl=v2.1.1
 # https://pkg.go.dev/github.com/cert-manager/release/cmd/cmrel?tab=versions
 tools += cmrel=e3cbe5171488deda000145003e22567bdce622ea
 # https://github.com/golangci/golangci-lint/releases
-tools += golangci-lint=v1.62.2
+tools += golangci-lint=v1.63.4
 # https://pkg.go.dev/golang.org/x/vuln?tab=versions
-tools += govulncheck=v1.1.3
+tools += govulncheck=v1.1.4
 # https://pkg.go.dev/github.com/operator-framework/operator-sdk/cmd/operator-sdk?tab=versions
-tools += operator-sdk=v1.38.0
+tools += operator-sdk=v1.39.1
 # https://pkg.go.dev/github.com/cli/cli/v2?tab=versions
-tools += gh=v2.63.1
+tools += gh=v2.65.0
 # https:///github.com/redhat-openshift-ecosystem/openshift-preflight/releases
-tools += preflight=1.10.2
+tools += preflight=1.11.1
 # https://github.com/daixiang0/gci/releases
 tools += gci=v0.13.5
 # https://github.com/google/yamlfmt/releases
-tools += yamlfmt=v0.14.0
+tools += yamlfmt=v0.15.0
 
 # https://pkg.go.dev/k8s.io/code-generator/cmd?tab=versions
-K8S_CODEGEN_VERSION := v0.31.0
+K8S_CODEGEN_VERSION := v0.32.1
 tools += client-gen=$(K8S_CODEGEN_VERSION)
 tools += deepcopy-gen=$(K8S_CODEGEN_VERSION)
 tools += informer-gen=$(K8S_CODEGEN_VERSION)
@@ -149,10 +149,10 @@ tools += applyconfiguration-gen=$(K8S_CODEGEN_VERSION)
 tools += defaulter-gen=$(K8S_CODEGEN_VERSION)
 tools += conversion-gen=$(K8S_CODEGEN_VERSION)
 # https://github.com/kubernetes/kube-openapi
-tools += openapi-gen=91dab695df6fb4696a1ea93e510a5a4c6d10d369
+tools += openapi-gen=2c72e554b1e7755b5fbee01cc910063070d5b4ec
 
 # https://raw.githubusercontent.com/kubernetes-sigs/controller-tools/master/envtest-releases.yaml
-KUBEBUILDER_ASSETS_VERSION := v1.31.0
+KUBEBUILDER_ASSETS_VERSION := v1.32.0
 tools += etcd=$(KUBEBUILDER_ASSETS_VERSION)
 tools += kube-apiserver=$(KUBEBUILDER_ASSETS_VERSION)
 
