@@ -35,6 +35,7 @@ repos=(
     "https://github.com/cert-manager/openshift-routes"
     "https://github.com/cert-manager/cmctl"
     "https://github.com/cert-manager/helm-tool"
+    "https://github.com/cert-manager/image-tool"
     "https://github.com/cert-manager/google-cas-issuer"
 )
 
