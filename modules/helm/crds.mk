@@ -66,6 +66,7 @@ generate-crds: | $(NEEDS_CONTROLLER-GEN) $(NEEDS_YQ)
 		$(sed_inplace) "s/REPLACE_LABELS_TEMPLATE/$(helm_labels_template_name)/g" $(helm_chart_source_dir)/templates/crd-$$i; \
 		$(YQ) -I2 '{"spec": .spec}' $(crds_gen_temp)/$$i >> $(helm_chart_source_dir)/templates/crd-$$i; \
 		cat $(crd_template_footer) >> $(helm_chart_source_dir)/templates/crd-$$i; \
+		echo "" >> $(helm_chart_source_dir)/templates/crd-$$i; \
 	done
 
 	@if [ -n "$$(ls $(crds_gen_temp) 2>/dev/null)" ]; then \
