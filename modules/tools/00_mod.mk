@@ -126,7 +126,7 @@ tools += goreleaser=v2.11.0
 # https://pkg.go.dev/github.com/anchore/syft/cmd/syft?tab=versions
 tools += syft=v1.28.0
 # https://github.com/cert-manager/helm-tool/releases
-tools += helm-tool=v0.5.3
+tools += helm-tool=1e5e33bbe040440558170bb41fc00eb02a15d1a1
 # https://github.com/cert-manager/image-tool/releases
 tools += image-tool=v0.1.0
 # https://github.com/cert-manager/cmctl/releases
