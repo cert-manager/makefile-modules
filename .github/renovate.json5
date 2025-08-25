@@ -1,0 +1,30 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  enabled: true,
+  enabledManagers: [
+    'gomod',
+  ],
+  separateMajorMinor: false,
+  extends: [
+    'config:best-practices',
+    ':gitSignOff',
+    ':disableVulnerabilityAlerts',
+    ':prConcurrentLimit10', // Set a limit to avoid too many PRs, at least on the first run
+    ':prHourlyLimitNone',
+  ],
+  timezone: 'Europe/London',
+  packageRules: [
+    {
+      groupName: 'Misc Go deps',
+      matchManagers: [
+        'gomod',
+      ],
+      matchPackageNames: [
+        '*',
+      ],
+    },
+  ],
+  ignorePaths: [
+    '**/vendor/**',
+  ],
+}

@@ -1,14 +1,6 @@
-# Update Go dependencies and GitHub Actions dependencies weekly.
+# Update GitHub Actions dependencies weekly.
 version: 2
 updates:
-- package-ecosystem: gomod
-  directories:
-    - "**/*"
-  schedule:
-    interval: weekly
-  groups:
-    all-go-deps:
-      patterns: ["*"]
 - package-ecosystem: github-actions
   directories:
     - "**/.github/workflows"
