@@ -42,6 +42,7 @@ helm_chart_image_registry := $(dir $(helm_chart_image_name))
 helm_chart_image_tag := $(helm_chart_version)
 helm_chart_sources := $(shell find $(helm_chart_source_dir) -maxdepth 1 -type f) $(shell find $(helm_chart_source_dir)/templates -type f)
 helm_chart_archive := $(bin_dir)/scratch/helm/$(helm_chart_name)-$(helm_chart_version).tgz
+helm_chart_archive_baked := $(bin_dir)/scratch/helm/$(helm_chart_name)-$(helm_chart_version).baked.tgz
 helm_digest_path := $(bin_dir)/scratch/helm/$(helm_chart_name)-$(helm_chart_version).digests
 helm_digest = $(shell head -1 $(helm_digest_path) 2> /dev/null)
 
@@ -70,12 +71,15 @@ $(helm_chart_archive): $(helm_chart_sources) | $(NEEDS_HELM) $(NEEDS_YQ) $(bin_d
 		--version $(helm_chart_version) \
 		--destination $(dir $@)
 
+$(helm_chart_archive_baked): $(helm_chart_archive) | $(NEEDS_HELM-TOOL)
+	$(HELM-TOOL) images bake $(helm_chart_archive) $(helm_chart_archive_baked) -p $(helm_chart_source_dir)/image_paths.json
+
 .PHONY: helm-chart-oci-push
 ## Create and push Helm chart to OCI registry.
 ## Will also create a non-v-prefixed tag for the OCI image.
 ## @category [shared] Publish
-helm-chart-oci-push: $(helm_chart_archive) | $(NEEDS_HELM) $(NEEDS_CRANE)
-	$(HELM) push "$(helm_chart_archive)" "oci://$(helm_chart_image_registry)" 2>&1 \
+helm-chart-oci-push: $(helm_chart_archive_baked) | $(NEEDS_HELM) $(NEEDS_CRANE)
+	$(HELM) push "$(helm_chart_archive_baked)" "oci://$(helm_chart_image_registry)" 2>&1 \
 		| tee >(grep -o "sha256:.\+" | tee $(helm_digest_path))
 
 	@# $(helm_chart_image_tag:v%=%) removes the v prefix from the value stored in helm_chart_image_tag.
@@ -106,6 +110,14 @@ generate-helm-schema: | $(NEEDS_HELM-TOOL) $(NEEDS_GOJQ)
 	$(HELM-TOOL) schema -i $(helm_chart_source_dir)/values.yaml | $(GOJQ) > $(helm_chart_source_dir)/values.schema.json
 
 shared_generate_targets += generate-helm-schema
+
+.PHONY: generate-helm-image-paths
+## Generate Helm chart image paths.
+## @category [shared] Generate/ Verify
+generate-helm-image-paths: | $(NEEDS_HELM-TOOL) $(NEEDS_GOJQ)
+	$(HELM-TOOL) images extract $(helm_chart_source_dir)/values.yaml | $(GOJQ) > $(helm_chart_source_dir)/image_paths.json
+
+shared_generate_targets += generate-helm-image-paths
 
 .PHONY: verify-helm-values
 ## Verify Helm chart values using helm-tool.
