@@ -69,6 +69,7 @@ tools += kubectl=v1.33.3
 # renovate: datasource=github-releases packageName=kubernetes-sigs/kind
 tools += kind=v0.30.0
 # https://www.vaultproject.io/downloads
+# renovate: datasource=docker packageName=hashicorp/vault
 tools += vault=1.20.2
 # https://github.com/Azure/azure-workload-identity/releases
 # renovate: datasource=github-releases packageName=Azure/azure-workload-identity
@@ -103,26 +104,36 @@ tools += istioctl=1.27.0
 # renovate: datasource=go packageName=sigs.k8s.io/controller-tools
 tools += controller-gen=v0.19.0
 # https://pkg.go.dev/golang.org/x/tools/cmd/goimports?tab=versions
+# renovate: datasource=go packageName=golang.org/x/tools
 tools += goimports=v0.35.0
 # https://pkg.go.dev/github.com/google/go-licenses/v2?tab=versions
 tools += go-licenses=e4be799587800ffd119a1b419f13daf4989da546
 # https://pkg.go.dev/gotest.tools/gotestsum?tab=versions
+# renovate: datasource=go packageName=gotest.tool/gotestsum
 tools += gotestsum=v1.12.3
 # https://pkg.go.dev/sigs.k8s.io/kustomize/kustomize/v5?tab=versions
+# renovate: datasource=go packageName=sigs.k8s.io/kustomize/kustomize/v5
 tools += kustomize=v5.7.1
 # https://pkg.go.dev/github.com/itchyny/gojq?tab=versions
+# renovate: datasource=go packageName=github.com/itchyny/gojq
 tools += gojq=v0.12.17
 # https://pkg.go.dev/github.com/google/go-containerregistry/pkg/crane?tab=versions
+# renovate: datasource=go packageName=github.com/google/go-containerregistry
 tools += crane=v0.20.6
 # https://pkg.go.dev/google.golang.org/protobuf/cmd/protoc-gen-go?tab=versions
+# renovate: datasource=go packageName=google.golang.org/protobuf
 tools += protoc-gen-go=v1.36.7
 # https://pkg.go.dev/github.com/sigstore/cosign/v2/cmd/cosign?tab=versions
+# renovate: datasource=go packageName=github.com/sigstore/cosign/v2
 tools += cosign=v2.5.3
 # https://pkg.go.dev/github.com/cert-manager/boilersuite?tab=versions
+# renovate: datasource=go packageName=github.com/cert-manager/boilersuite
 tools += boilersuite=v0.1.0
 # https://pkg.go.dev/github.com/princjef/gomarkdoc/cmd/gomarkdoc?tab=versions
+# renovate: datasource=go packageName=github.com/princjef/gomarkdoc
 tools += gomarkdoc=v1.1.0
 # https://pkg.go.dev/oras.land/oras/cmd/oras?tab=versions
+# renovate: datasource=go packageName=oras.land/oras
 tools += oras=v1.2.3
 # https://pkg.go.dev/github.com/onsi/ginkgo/v2/ginkgo?tab=versions
 # The gingko version should be kept in sync with the version used in code.
@@ -132,10 +143,13 @@ tools += oras=v1.2.3
 detected_ginkgo_version := $(shell [[ -f go.mod ]] && awk '/ginkgo\/v2/ {print $$2}' go.mod || echo "v2.23.4")
 tools += ginkgo=$(detected_ginkgo_version)
 # https://pkg.go.dev/github.com/cert-manager/klone?tab=versions
+# renovate: datasource=go packageName=github.com/cert-manager/klone
 tools += klone=v0.2.0
 # https://pkg.go.dev/github.com/goreleaser/goreleaser/v2?tab=versions
+# renovate: datasource=go packageName=github.com/goreleaser/goreleaser/v2
 tools += goreleaser=v2.11.2
 # https://pkg.go.dev/github.com/anchore/syft/cmd/syft?tab=versions
+# renovate: datasource=go packageName=github.com/anchore/syft
 tools += syft=v1.30.0
 # https://github.com/cert-manager/helm-tool/releases
 # renovate: datasource=github-releases packageName=cert-manager/helm-tool
@@ -149,13 +163,16 @@ tools += cmctl=v2.3.0
 # https://pkg.go.dev/github.com/cert-manager/release/cmd/cmrel?tab=versions
 tools += cmrel=e3cbe5171488deda000145003e22567bdce622ea
 # https://pkg.go.dev/github.com/golangci/golangci-lint/v2/cmd/golangci-lint?tab=versions
+# renovate: datasource=go packageName=github.com/golangci/golangci-lint/v2
 tools += golangci-lint=v2.3.0
 # https://pkg.go.dev/golang.org/x/vuln?tab=versions
+# renovate: datasource=go packageName=golang.org/x/vuln
 tools += govulncheck=v1.1.4
 # https://github.com/operator-framework/operator-sdk/releases
 # renovate: datasource=github-releases packageName=operator-framework/operator-sdk
 tools += operator-sdk=v1.41.1
 # https://pkg.go.dev/github.com/cli/cli/v2?tab=versions
+# renovate: datasource=go packageName=github.com/cli/cli/v2
 tools += gh=v2.76.2
 # https://github.com/redhat-openshift-ecosystem/openshift-preflight/releases
 # renovate: datasource=github-releases packageName=redhat-openshift-ecosystem/openshift-preflight
