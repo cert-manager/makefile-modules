@@ -39,16 +39,6 @@
       ],
     },
     {
-      groupName: 'Kubernetes Go deps',
-      matchManagers: [
-        'gomod',
-      ],
-      matchPackageNames: [
-        'sigs.k8s.io**/**',
-        'k8s.io**/**',
-      ],
-    },
-    {
       groupName: 'Cloud Go deps',
       matchManagers: [
         'gomod',
@@ -62,6 +52,31 @@
         'github.com/digitalocean**/**',
         'google.golang.org/api',
       ],
+    },
+    {
+      groupName: 'Kubernetes Go deps',
+      matchManagers: [
+        'gomod',
+      ],
+      matchPackageNames: [
+        'sigs.k8s.io**/**',
+        'k8s.io**/**',
+      ],
+    },
+    {
+      groupName: 'Kubernetes Go patches',
+      matchManagers: [
+        'gomod',
+      ],
+      matchPackageNames: [
+        'k8s.io**/**',
+      ],
+      matchUpdateTypes: [
+        'patch',
+      ],
+      addLabels: [
+        'skip-review', // Adding label to allow PRs to automerge
+      ]
     },
     {
       groupName: 'golang.org/x deps',
