@@ -39,6 +39,17 @@
       ],
     },
     {
+      groupName: 'Testing Go deps',
+      matchManagers: [
+        'gomod',
+      ],
+      matchPackageNames: [
+        'github.com/onsi/ginkgo**/**',
+        'github.com/onsi/gomega**/**',
+        'github.com/stretchr/testify**/**',
+      ],
+    },
+    {
       groupName: 'Kubernetes Go deps',
       matchManagers: [
         'gomod',
