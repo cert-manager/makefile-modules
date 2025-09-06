@@ -22,7 +22,7 @@ repository_base_dir := $(dir $(lastword $(MAKEFILE_LIST)))/base/
 ## Generate base files in the repository
 ## @category [shared] Generate/ Verify
 generate-base:
-	rsync -a --exclude='.github/renovate.json5' "$(repository_base_dir)/" ./
+	cp -r $(repository_base_dir)/. ./
 	cd $(repository_base_dir) && \
 		find . -type f | while read file; do \
 			sed "s|{{REPLACE:GH-REPOSITORY}}|$(repo_name:github.com/%=%)|g" "$$file" > "$(CURDIR)/$$file"; \
