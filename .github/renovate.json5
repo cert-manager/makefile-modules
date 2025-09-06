@@ -31,7 +31,26 @@
         '(?:^|\\r\\n|\\r|\\n)#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+packageName=(?<packageName>\\S+)(?:^|\\r\\n|\\r|\\n)\\S+ (:|\\?)= (?<currentValue>\\S+)'
       ],
     },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
+        'modules/tools/**',
+      ],
+      matchStrings: [
+        'KUBEBUILDER_ASSETS_VERSION\\s:=\\s(?<currentValue>)\\S+'
+      ],
+      datasourceTemplate: 'envtest',
+    }
   ],
+  customDatasources: {
+    envtest: {
+      format: 'yaml',
+      defaultRegistryUrlTemplate: 'https://raw.githubusercontent.com/kubernetes-sigs/controller-tools/master/envtest-releases.yaml',
+      transformTemplates: [
+        '{"releases": releases.$keys().{"version": $, "sourceUrl": "https://github.com/kubernetes-sigs/controller-tools/releases/tag/envtest-" & $}}' 
+      ],
+    },
+  },
   packageRules: [
     {
       groupName: 'Tools',
