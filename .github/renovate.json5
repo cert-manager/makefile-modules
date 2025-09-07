@@ -13,7 +13,7 @@
   extends: [
     'config:best-practices',
     ':gitSignOff',
-    ':disableVulnerabilityAlerts',
+    ':enableVulnerabilityAlerts',
     ':rebaseStalePrs',
     ':prConcurrentLimit10', // Set a limit to avoid too many PRs, at least on the first run
     ':prHourlyLimitNone',
