@@ -152,7 +152,7 @@ tools += klone=v0.2.0
 tools += goreleaser=v2.12.5
 # https://pkg.go.dev/github.com/anchore/syft/cmd/syft?tab=versions
 # renovate: datasource=go packageName=github.com/anchore/syft
-tools += syft=v1.33.0
+tools += syft=v1.34.2
 # https://github.com/cert-manager/helm-tool/releases
 # renovate: datasource=github-releases packageName=cert-manager/helm-tool
 tools += helm-tool=v0.5.3
@@ -176,7 +176,7 @@ tools += govulncheck=v1.1.4
 tools += operator-sdk=v1.41.1
 # https://pkg.go.dev/github.com/cli/cli/v2?tab=versions
 # renovate: datasource=go packageName=github.com/cli/cli/v2
-tools += gh=v2.81.0
+tools += gh=v2.82.0
 # https://github.com/redhat-openshift-ecosystem/openshift-preflight/releases
 # renovate: datasource=github-releases packageName=redhat-openshift-ecosystem/openshift-preflight
 tools += preflight=1.14.1
@@ -185,7 +185,7 @@ tools += preflight=1.14.1
 tools += gci=v0.13.7
 # https://github.com/google/yamlfmt/releases
 # renovate: datasource=github-releases packageName=google/yamlfmt
-tools += yamlfmt=v0.17.2
+tools += yamlfmt=v0.19.0
 # https://github.com/yannh/kubeconform/releases
 # renovate: datasource=github-releases packageName=yannh/kubeconform
 tools += kubeconform=v0.7.0
