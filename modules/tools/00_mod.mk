@@ -86,7 +86,7 @@ tools += yq=v4.48.1
 tools += ko=0.18.0
 # https://github.com/protocolbuffers/protobuf/releases
 # renovate: datasource=github-releases packageName=protocolbuffers/protobuf
-tools += protoc=v32.1
+tools += protoc=v33.0
 # https://github.com/aquasecurity/trivy/releases
 # renovate: datasource=github-releases packageName=aquasecurity/trivy
 tools += trivy=v0.67.2
@@ -127,7 +127,7 @@ tools += crane=v0.20.6
 tools += protoc-gen-go=v1.36.10
 # https://pkg.go.dev/github.com/sigstore/cosign/v2/cmd/cosign?tab=versions
 # renovate: datasource=go packageName=github.com/sigstore/cosign/v2
-tools += cosign=v2.6.1
+tools += cosign=v3.0.2
 # https://pkg.go.dev/github.com/cert-manager/boilersuite?tab=versions
 # renovate: datasource=go packageName=github.com/cert-manager/boilersuite
 tools += boilersuite=v0.1.0
@@ -580,10 +580,10 @@ $(DOWNLOAD_DIR)/tools/ko@$(KO_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(DOWNLOAD_DIR
 		chmod +x $(outfile); \
 		rm -f $(outfile).tar.gz
 
-protoc_linux_amd64_SHA256SUM=e9c129c176bb7df02546c4cd6185126ca53c89e7d2f09511e209319704b5dd7e
-protoc_linux_arm64_SHA256SUM=4a802ed23d70f7bad7eb19e5a3e724b3aa967250d572cadfd537c1ba939aee6a
-protoc_darwin_amd64_SHA256SUM=f9caa5b4d0b537acffb0ffd7d53225511a5574ef903fca550ea9e7600987f13b
-protoc_darwin_arm64_SHA256SUM=a7b51b2113862690fa52c62f8891a6037bafb9db88d4f9924c486de9d9bb89d5
+protoc_linux_amd64_SHA256SUM=d99c011b799e9e412064244f0be417e5d76c9b6ace13a2ac735330fa7d57ad8f
+protoc_linux_arm64_SHA256SUM=4b96bc91f8b54d829b8c3ca2207ff1ceb774843321e4fa5a68502faece584272
+protoc_darwin_amd64_SHA256SUM=e4e50a703147a92d1a5a2d3a34c9e41717f67ade67d4be72b9a466eb8f22fe87
+protoc_darwin_arm64_SHA256SUM=3cf55dd47118bd2efda9cd26b74f8bbbfcf5beb1bf606bc56ad4c001b543f6d3
 
 .PRECIOUS: $(DOWNLOAD_DIR)/tools/protoc@$(PROTOC_VERSION)_$(HOST_OS)_$(HOST_ARCH)
 $(DOWNLOAD_DIR)/tools/protoc@$(PROTOC_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(DOWNLOAD_DIR)/tools
