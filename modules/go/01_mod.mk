@@ -147,9 +147,9 @@ fix-golangci-lint: | $(NEEDS_GOLANGCI-LINT) $(NEEDS_YQ) $(NEEDS_GCI) $(bin_dir)/
 	@find . -name go.mod -not \( -path "./$(bin_dir)/*" -or -path "./make/_shared/*" \) \
 		| while read d; do \
 				target=$$(dirname $${d}); \
-				echo "Running 'GOVERSION=$(VENDORED_GO_VERSION) $(bin_dir)/tools/golangci-lint fmt -c $(CURDIR)/$(golangci_lint_config)' in directory '$${target}'"; \
+				echo "Running 'GOVERSION=$(VENDORED_GO_VERSION) $(bin_dir)/tools/golangci-lint run --fix -c $(CURDIR)/$(golangci_lint_config) --timeout $(golangci_lint_timeout)' in directory '$${target}'"; \
 				pushd "$${target}" >/dev/null; \
-				GOVERSION=$(VENDORED_GO_VERSION) $(GOLANGCI-LINT) fmt -c $(CURDIR)/$(golangci_lint_config) || exit; \
+				GOVERSION=$(VENDORED_GO_VERSION) $(GOLANGCI-LINT) run --fix -c $(CURDIR)/$(golangci_lint_config) --timeout $(golangci_lint_timeout) || exit; \
 				popd >/dev/null; \
 				echo ""; \
 			done
