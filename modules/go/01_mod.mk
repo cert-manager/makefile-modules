@@ -117,7 +117,6 @@ generate-golangci-lint-config: | $(NEEDS_GOLANGCI-LINT) $(NEEDS_YQ) $(bin_dir)/s
 	cp $(golangci_lint_config) $(bin_dir)/scratch/golangci-lint.yaml.tmp
 	$(YQ) -i 'del(.linters.enable)' $(bin_dir)/scratch/golangci-lint.yaml.tmp
 	$(YQ) eval-all -i '. as $$item ireduce ({}; . * $$item)' $(bin_dir)/scratch/golangci-lint.yaml.tmp $(golangci_lint_override)
-	$(YQ) -i '(.. | select(tag == "!!str")) |= sub("{{REPO-NAME}}", "$(repo_name)")' $(bin_dir)/scratch/golangci-lint.yaml.tmp
 	mv $(bin_dir)/scratch/golangci-lint.yaml.tmp $(golangci_lint_config)
 
 shared_generate_targets += generate-golangci-lint-config
