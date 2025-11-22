@@ -15,6 +15,7 @@
 images_amd64 ?=
 images_arm64 ?=
 
+# renovate: datasource=github-releases packageName=cert-manager/cert-manager
 cert_manager_version := v1.18.2
 
 images_amd64 += quay.io/jetstack/cert-manager-controller:$(cert_manager_version)@sha256:058a3ee5b133f964acefbd5926a08ace1fb7c0775b92d3bc11e4c7a33de71e25

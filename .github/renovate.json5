@@ -12,7 +12,8 @@
     {
       customType: 'regex',
       managerFilePatterns: [
-        'modules/tools/**',
+        'modules/cert-manager/**/*.mk',
+        'modules/tools/**/*.mk',
       ],
       matchStrings: [
         '(?:^|\\r\\n|\\r|\\n)#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+packageName=(?<packageName>\\S+)(?:^|\\r\\n|\\r|\\n)\\S+ \\+= \\S+=(?<currentValue>\\S+)',
@@ -22,7 +23,7 @@
     {
       customType: 'regex',
       managerFilePatterns: [
-        'modules/tools/**',
+        'modules/tools/**/*.mk',
       ],
       depNameTemplate: 'envtest',
       matchStrings: [
@@ -42,9 +43,23 @@
   },
   packageRules: [
     {
+      matchManagers: [
+        'custom.regex',
+      ],
+      postUpgradeTasks: {
+        commands: [
+          'make learn-image-shas',
+        ],
+        executionMode: 'branch',
+      }
+    },
+    {
       groupName: 'Tools',
       matchManagers: [
         'custom.regex',
+      ],
+      matchFileNames: [
+        'modules/tools/**/*.mk',
       ],
       postUpgradeTasks: {
         commands: [
