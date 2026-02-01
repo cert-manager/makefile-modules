@@ -84,7 +84,7 @@ tools += azwi=v1.5.1
 tools += kyverno=v1.16.3
 # https://github.com/mikefarah/yq/releases
 # renovate: datasource=github-releases packageName=mikefarah/yq
-tools += yq=v4.50.1
+tools += yq=v4.52.2
 # https://github.com/ko-build/ko/releases
 # renovate: datasource=github-releases packageName=ko-build/ko
 tools += ko=0.18.1
@@ -99,7 +99,7 @@ tools += trivy=v0.69.0
 tools += ytt=v0.53.0
 # https://github.com/rclone/rclone/releases
 # renovate: datasource=github-releases packageName=rclone/rclone
-tools += rclone=v1.72.1
+tools += rclone=v1.73.0
 # https://github.com/istio/istio/releases
 # renovate: datasource=github-releases packageName=istio/istio
 tools += istioctl=1.28.3
@@ -582,10 +582,10 @@ $(DOWNLOAD_DIR)/tools/kyverno@$(KYVERNO_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(DO
 		chmod +x $(outfile); \
 		rm -f $(outfile).tar.gz
 
-yq_linux_amd64_SHA256SUM=c7a1278e6bbc4924f41b56db838086c39d13ee25dcb22089e7fbf16ac901f0d4
-yq_linux_arm64_SHA256SUM=cf0a663d8e4e00bb61507c5237b95b45a6aaa1fbedac77f4dc8abdadd5e2b745
-yq_darwin_amd64_SHA256SUM=6c24724c203f8ef0afaa4584d8b7baa150fec7f6d8a493efa49b80f620174119
-yq_darwin_arm64_SHA256SUM=589cd3e27b2a0ae62fc4513c7d18db56203aaf88bf7c480f0cb3d4f4d0ac5514
+yq_linux_amd64_SHA256SUM=a74bd266990339e0c48a2103534aef692abf99f19390d12c2b0ce6830385c459
+yq_linux_arm64_SHA256SUM=c82856ac30da522f50dcdd4f53065487b5a2927e9b87ff637956900986f1f7c2
+yq_darwin_amd64_SHA256SUM=54a63555210e73abed09108097072e28bf82a6bb20439a72b55509c4dd42378d
+yq_darwin_arm64_SHA256SUM=34613ea97c4c77e1894a8978dbf72588d187a69a6292c10dab396c767a1ecde7
 
 .PRECIOUS: $(DOWNLOAD_DIR)/tools/yq@$(YQ_VERSION)_$(HOST_OS)_$(HOST_ARCH)
 $(DOWNLOAD_DIR)/tools/yq@$(YQ_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(DOWNLOAD_DIR)/tools
@@ -660,10 +660,10 @@ $(DOWNLOAD_DIR)/tools/ytt@$(YTT_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(DOWNLOAD_D
 		$(checkhash_script) $(outfile) $(ytt_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM); \
 		chmod +x $(outfile)
 
-rclone_linux_amd64_SHA256SUM=b5c9b2fb6ada8a400c5fc5d48cd112dc1adea21a3b73b03857059374dd8a78d0
-rclone_linux_arm64_SHA256SUM=66ce9c7fbdf6ba38991fa2ac193ed051bd6d04aeec693900c848154bf549484f
-rclone_darwin_amd64_SHA256SUM=c349fd4c584374af58fc2c71f55a768e86aaebfc5924c36967db896e205e8058
-rclone_darwin_arm64_SHA256SUM=2a2fa94f66b90bfcdab8100011260dad7e1d59d67e6c2f80a251cd9e5f80ce05
+rclone_linux_amd64_SHA256SUM=2a69bf23b6e937b03f4b6f71e97154543d81610b2e5d209e9a2b96b1f9c2d803
+rclone_linux_arm64_SHA256SUM=4e361cc6a5bd29ce157bb60f3d4579d8b323c8c0e3643f226549cf0c050a5fa5
+rclone_darwin_amd64_SHA256SUM=07a6b81920be1cb6f1512c57e814d4add59bb5859755529eed504ab9feeae7b2
+rclone_darwin_arm64_SHA256SUM=9efe8f1c147be5150950956a087e44670407bbab1c71df9d7dc4e23d69a77e3e
 
 .PRECIOUS: $(DOWNLOAD_DIR)/tools/rclone@$(RCLONE_VERSION)_$(HOST_OS)_$(HOST_ARCH)
 $(DOWNLOAD_DIR)/tools/rclone@$(RCLONE_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(DOWNLOAD_DIR)/tools
