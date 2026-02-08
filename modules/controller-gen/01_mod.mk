@@ -12,23 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-################
-# Check Inputs #
-################
-
 ifndef go_header_file
 $(error go_header_file is not set)
 endif
 
-################
-# Add targets #
-################
+controller_gen_sources = $(shell ls -d */ | grep -v '_bin' | grep -v 'make')
 
 .PHONY: generate-deepcopy
 ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
 ## @category [shared] Generate/ Verify
 generate-deepcopy: | $(NEEDS_CONTROLLER-GEN)
-	$(eval directories := $(shell ls -d */ | grep -v '_bin' | grep -v 'make'))
-	$(CONTROLLER-GEN) object:headerFile=$(go_header_file) $(directories:%=paths=./%...)
+	$(CONTROLLER-GEN) object:headerFile=$(go_header_file) $(controller_gen_sources:%=paths=./%...)
 
 shared_generate_targets += generate-deepcopy
+
+.PHONY: generate-applyconfigurations
+## Generate applyconfigurations to support typesafe SSA.
+## @category [shared] Generate/ Verify
+generate-applyconfigurations: | $(NEEDS_CONTROLLER-GEN)
+	$(CONTROLLER-GEN) applyconfiguration:headerFile=$(go_header_file) $(controller_gen_sources:%=paths=./%...)
+
+shared_generate_targets += generate-applyconfigurations
