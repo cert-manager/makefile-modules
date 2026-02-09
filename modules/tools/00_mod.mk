@@ -171,7 +171,12 @@ tools += cmctl=v2.4.0
 tools += cmrel=v1.12.15-0.20241121151736-e3cbe5171488
 # https://pkg.go.dev/github.com/golangci/golangci-lint/v2/cmd/golangci-lint?tab=versions
 # renovate: datasource=go packageName=github.com/golangci/golangci-lint/v2
-tools += golangci-lint=v2.8.0
+golangci_lint_version := v2.8.0
+# https://pkg.go.dev/sigs.k8s.io/kube-api-linter?tab=versions
+# renovate: datasource=go packageName=sigs.k8s.io/kube-api-linter
+golangci_lint_kube_version := v0.0.0-20260114104534-18147eee9c49
+tools += golangci-lint=$(golangci_lint_version)
+tools += golangci-lint-kube=$(golangci_lint_version)_$(golangci_lint_kube_version)
 # https://pkg.go.dev/golang.org/x/vuln?tab=versions
 # renovate: datasource=go packageName=golang.org/x/vuln
 tools += govulncheck=v1.1.4
@@ -716,6 +721,39 @@ $(DOWNLOAD_DIR)/tools/operator-sdk@$(OPERATOR-SDK_VERSION)_$(HOST_OS)_$(HOST_ARC
 	@source $(lock_script) $@; \
 		$(CURL) https://github.com/operator-framework/operator-sdk/releases/download/$(OPERATOR-SDK_VERSION)/operator-sdk_$(HOST_OS)_$(HOST_ARCH) -o $(outfile); \
 		$(checkhash_script) $(outfile) $(operator-sdk_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM); \
+		chmod +x $(outfile)
+
+.PRECIOUS: $(DOWNLOAD_DIR)/tools/golangci-lint-kube@$(GOLANGCI-LINT-KUBE_VERSION)_$(HOST_OS)_$(HOST_ARCH)
+$(DOWNLOAD_DIR)/tools/golangci-lint-kube@$(GOLANGCI-LINT-KUBE_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(NEEDS_GO) $(NEEDS_GOLANGCI-LINT) $(NEEDS_YQ) $(DOWNLOAD_DIR)/tools
+	@echo "Building golangci-lint-kube custom golangci-lint binary for linting Kubernetes API types"
+
+	@# Generate a temporary directory, create a minimal .custom-gcl.yaml there,
+	@# run the custom build from that directory, then move the binary into place.
+	@# Prepare a unique tempdir and generate .custom-gcl.yaml there using yq
+	$(eval tmpdir := $(shell mktemp -d))
+
+	$(eval golangci_lint_version := $(word 1,$(subst _, ,$(GOLANGCI-LINT-KUBE_VERSION))))
+	$(eval golangci_lint_kube_version := $(word 2,$(subst _, ,$(GOLANGCI-LINT-KUBE_VERSION))))
+
+	@# Generate the .custom-gcl.yaml from scratch (do NOT read the repo file).
+	@# Using yq to build the exact content provided.
+	echo '{}' | \
+		$(YQ) '.version = "$(golangci_lint_version)"' | \
+		$(YQ) '.name = "golangci-kube-api-linter"' | \
+		$(YQ) '.plugins[0].module = "sigs.k8s.io/kube-api-linter"' | \
+		$(YQ) '.plugins[0].version = "$(golangci_lint_kube_version)"' \
+		> $(tmpdir)/.custom-gcl.yaml
+
+	# Run the custom build under lock to avoid races when writing output
+	source $(lock_script) $@; \
+		mkdir -p $(outfile).dir; \
+		cd "$(tmpdir)" && \
+			GOVERSION=$(VENDORED_GO_VERSION) \
+			$(GOLANGCI-LINT) custom -v \
+				--destination "$(outfile).dir" \
+				--name golangci-lint-kube; \
+		mv "$(outfile).dir/golangci-lint-kube" $(outfile); \
+		rm -rf $(outfile).dir "$(tmpdir)"; \
 		chmod +x $(outfile)
 
 #################
