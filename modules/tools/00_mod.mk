@@ -90,7 +90,7 @@ tools += yq=v4.52.4
 tools += ko=0.18.1
 # https://github.com/protocolbuffers/protobuf/releases
 # renovate: datasource=github-releases packageName=protocolbuffers/protobuf
-tools += protoc=v33.5
+tools += protoc=v34.0
 # https://github.com/aquasecurity/trivy/releases
 # renovate: datasource=github-releases packageName=aquasecurity/trivy
 tools += trivy=v0.69.1
@@ -612,10 +612,10 @@ $(DOWNLOAD_DIR)/tools/ko@$(KO_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(DOWNLOAD_DIR
 		chmod +x $(outfile); \
 		rm -f $(outfile).tar.gz
 
-protoc_linux_amd64_SHA256SUM=24e58fb231d50306ee28491f33a170301e99540f7e29ca461e0e80fd1239f8d1
-protoc_linux_arm64_SHA256SUM=2b0fcf9b2c32cbadccc0eb7a88b841fffecd4a06fc80acdba2b5be45e815c38a
-protoc_darwin_amd64_SHA256SUM=7f31625f8bec4929082ae9209e101c1c03692624457cc6332f83736db495ee92
-protoc_darwin_arm64_SHA256SUM=7084c6482e3bb416a33fe2162ba566711773b842e6953bf6cb181647b9ef57c0
+protoc_linux_amd64_SHA256SUM=e9a91b6fcfe4177ec2cd35fc8f15c1e811fa0ecdef9372755cd6d3513d5faaab
+protoc_linux_arm64_SHA256SUM=f0b8aad28be5ea6150c082f96ac57e028154afb9ee29f4ce092b5a39df8ae6c8
+protoc_darwin_amd64_SHA256SUM=d58fcd413a9ed458283d54023e409fd5cf767da4ed225d1ffaffd83cf2764f53
+protoc_darwin_arm64_SHA256SUM=3ef35187a3c8aed81ee57e792227e483e558fa56c93fce525e569bff55794c1a
 
 .PRECIOUS: $(DOWNLOAD_DIR)/tools/protoc@$(PROTOC_VERSION)_$(HOST_OS)_$(HOST_ARCH)
 $(DOWNLOAD_DIR)/tools/protoc@$(PROTOC_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(DOWNLOAD_DIR)/tools
