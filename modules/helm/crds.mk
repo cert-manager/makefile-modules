@@ -53,25 +53,30 @@ endef
 .PHONY: generate-crds
 ## Generate CRD manifests.
 ## @category [shared] Generate/ Verify
-generate-crds: | $(NEEDS_CONTROLLER-GEN) $(NEEDS_YQ)
-	$(eval crds_gen_temp := $(bin_dir)/scratch/crds)
+generate-crds: | $(NEEDS_CONTROLLER-GEN)
 	$(eval directories := $(shell ls -d */ | grep -v -e 'make' $(shell git check-ignore -- * | sed 's/^/-e /')))
 
-	rm -rf $(crds_gen_temp)
-	mkdir -p $(crds_gen_temp)
+	rm -rf $(crds_dir)
+	mkdir -p $(crds_dir)
 
 	$(CONTROLLER-GEN) crd \
 		$(directories:%=paths=./%...) \
-		output:crd:artifacts:config=$(crds_gen_temp)
+		output:crd:artifacts:config=$(crds_dir)
 
+	cp $(crds_dir_readme) $(crds_dir)/README.md
+
+.PHONY: generate-helm-crds
+## Generate Helm-templated CRDs.
+## @category [shared] Generate/ Verify
+generate-helm-crds: generate-crds | $(NEEDS_YQ)
 	@echo "Updating CRDs with helm templating, writing to $(helm_chart_source_dir)/templates"
 
-	$(eval crds_gen_temp_all_files := $(wildcard $(crds_gen_temp)/$(crds_template_include_pattern)))
-	$(eval crds_gen_temp_files := $(if $(crds_template_exclude_pattern), \
-		$(call filter-out-basenames,$(crds_gen_temp_all_files),$(crds_template_exclude_pattern)), \
-		$(crds_gen_temp_all_files)))
+	$(eval crds_all_files := $(wildcard $(crds_dir)/$(crds_template_include_pattern)))
+	$(eval crds_files := $(if $(crds_template_exclude_pattern), \
+		$(call filter-out-basenames,$(crds_all_files),$(crds_template_exclude_pattern)), \
+		$(crds_all_files)))
 
-	@for f in $(crds_gen_temp_files); do \
+	@for f in $(crds_files); do \
 		crd_name=$$($(YQ) eval '.metadata.name' $$f); \
 		crd_template_file="$(helm_chart_source_dir)/templates/crd-$$(basename $$f)"; \
 		cat $(crd_template_header) > $$crd_template_file; \
@@ -82,9 +87,4 @@ generate-crds: | $(NEEDS_CONTROLLER-GEN) $(NEEDS_YQ)
 		cat $(crd_template_footer) >> $$crd_template_file; \
 	done
 
-	@if [ -n "$$(ls $(crds_gen_temp) 2>/dev/null)" ]; then \
-		cp $(crds_gen_temp)/* $(crds_dir)/ ; \
-		cp $(crds_dir_readme) $(crds_dir)/README.md ; \
-	fi
-
-shared_generate_targets += generate-crds
+shared_generate_targets += generate-helm-crds
