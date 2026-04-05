@@ -3,11 +3,6 @@
   extends: [
     'github>cert-manager/renovate-config:default.json5',
   ],
-  enabledManagers: [
-    'custom.regex',
-    'github-actions',
-    'gomod',
-  ],
   customManagers: [
     {
       customType: 'regex',
