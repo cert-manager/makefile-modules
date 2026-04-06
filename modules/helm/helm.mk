@@ -118,8 +118,20 @@ shared_verify_targets += verify-helm-values
 .PHONY: verify-helm-unittest
 ## Run Helm chart unit tests using helm-unittest.
 ## @category [shared] Generate/ Verify
-verify-helm-unittest: | $(NEEDS_HELM-UNITTEST)
-	$(HELM-UNITTEST) $(helm_chart_source_dir)
+verify-helm-unittest: | $(NEEDS_HELM-UNITTEST) $(NEEDS_YQ) $(bin_dir)/scratch/helm
+	$(eval helm_unittest_dir := $(bin_dir)/scratch/helm/unittest-chart)
+	rm -rf $(helm_unittest_dir)
+	cp -a $(helm_chart_source_dir) $(helm_unittest_dir)
+
+	@# If Chart.yaml doesn't exist but Chart.template.yaml does (e.g. cert-manager),
+	@# use the template as the base Chart.yaml.
+	@if [ -f "$(helm_unittest_dir)/Chart.template.yaml" ] && [ ! -f "$(helm_unittest_dir)/Chart.yaml" ]; then \
+		cp $(helm_unittest_dir)/Chart.template.yaml $(helm_unittest_dir)/Chart.yaml; \
+	fi
+
+	$(YQ) '.annotations."artifacthub.io/prerelease" = "$(IS_PRERELEASE)"' --inplace $(helm_unittest_dir)/Chart.yaml
+
+	$(HELM-UNITTEST) $(helm_unittest_dir)
 
 shared_verify_targets += verify-helm-unittest
 
