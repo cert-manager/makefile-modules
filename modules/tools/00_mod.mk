@@ -30,6 +30,10 @@ endif
 export DOWNLOAD_DIR ?= $(default_shared_dir)/downloaded
 export GOVENDOR_DIR ?= $(default_shared_dir)/go_vendor
 
+# https://go.dev/dl/
+# renovate: datasource=golang-version packageName=go
+VENDORED_GO_VERSION := 1.26.2
+
 $(bin_dir)/tools $(DOWNLOAD_DIR)/tools:
 	@mkdir -p $@
 
@@ -221,10 +225,6 @@ tools += kube-apiserver=$(KUBEBUILDER_ASSETS_VERSION)
 # Additional tools can be defined to reuse the tooling in this file
 ADDITIONAL_TOOLS ?=
 tools += $(ADDITIONAL_TOOLS)
-
-# https://go.dev/dl/
-# renovate: datasource=golang-version packageName=go
-VENDORED_GO_VERSION := 1.26.2
 
 # Print the go version which can be used in GH actions
 .PHONY: print-go-version
