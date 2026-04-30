@@ -172,7 +172,7 @@ tools += helm-tool=v0.5.3
 tools += image-tool=v0.1.0
 # https://github.com/cert-manager/cmctl/releases
 # renovate: datasource=github-releases packageName=cert-manager/cmctl
-tools += cmctl=v2.4.1
+tools += cmctl=v2.5.0
 # https://pkg.go.dev/github.com/cert-manager/release/cmd/cmrel?tab=versions
 # renovate: datasource=go packageName=github.com/cert-manager/release
 tools += cmrel=v1.12.15-0.20241121151736-e3cbe5171488
