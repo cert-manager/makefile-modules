@@ -103,7 +103,7 @@ tools += protoc=v34.1
 tools += trivy=v0.70.0
 # https://github.com/vmware-tanzu/carvel-ytt/releases
 # renovate: datasource=github-releases packageName=vmware-tanzu/carvel-ytt
-tools += ytt=v0.54.0
+tools += ytt=v0.55.0
 # https://github.com/rclone/rclone/releases
 # renovate: datasource=github-releases packageName=rclone/rclone
 tools += rclone=v1.74.1
@@ -671,10 +671,10 @@ $(DOWNLOAD_DIR)/tools/trivy@$(TRIVY_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(DOWNLO
 		chmod +x $(outfile); \
 		rm $(outfile).tar.gz
 
-ytt_linux_amd64_SHA256SUM=6a1549260d7641585c4434c83ad237a66ec4fd4478edbd32e5e190ce1e755d20
-ytt_linux_arm64_SHA256SUM=2ee1dee5c952a081896ac5b30853b6e59bd77b5fdd244bff2ea16a3172e8fb5a
-ytt_darwin_amd64_SHA256SUM=c4dad8e654e9890a745aa62f3cbf87e5a6ccd5302afdf64855e918e5cdea81ca
-ytt_darwin_arm64_SHA256SUM=b447fa763dac6cad0e2497cb382a778cc4d47171374cc1347ca2896f2e1c1ea6
+ytt_linux_amd64_SHA256SUM=013adf9ed2fbd392b9861e5ec34015dabfcfa2e82da9e8cc0ee1e5c6a7f9b64b
+ytt_linux_arm64_SHA256SUM=14e0a83a793c04bd26b2a2328f6df169b38ddf24257a64ffde23038f4ecab0bf
+ytt_darwin_amd64_SHA256SUM=6218426752505fffce393a18eb700e7ddb2ddcc1c8ad521d02101bdb9db2f7f6
+ytt_darwin_arm64_SHA256SUM=76c2d8f958568ceabe927d32206d79b779bd8341450d99b78d028ae608d1348b
 
 .PRECIOUS: $(DOWNLOAD_DIR)/tools/ytt@$(YTT_VERSION)_$(HOST_OS)_$(HOST_ARCH)
 $(DOWNLOAD_DIR)/tools/ytt@$(YTT_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(DOWNLOAD_DIR)/tools
