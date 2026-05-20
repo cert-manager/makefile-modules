@@ -97,7 +97,7 @@ echo "kind_image_kindversion := ${kind_version}" >> "${kind_versionfile}.tmp"
 echo "" >> "${kind_versionfile}.tmp"
 
 release_json=$(curl -fsSL "https://api.github.com/repos/kubernetes-sigs/kind/releases/tags/${kind_version}"| jq '
-  [ .body  | capture("- v?1\\.(?<minor>[0-9]+)(.(?<patch>[0-9]+))?: `kindest/node:v(?<version>[^@]+)@sha256:(?<sha256>[^`]+)`\r"; "g") ]
+  [ .body  | capture("- v?1\\.(?<minor>[0-9]+)(\\.(?<patch>[0-9]+))?: `kindest/node:v(?<version>[0-9]+\\.[0-9]+\\.[0-9]+(-[A-Za-z0-9.]+)?)@sha256:(?<sha256>[A-Fa-f0-9]{64})`\r"; "g") ]
   | group_by(.minor) | map(max_by(.patch))
   | sort_by(.minor)'
 )
