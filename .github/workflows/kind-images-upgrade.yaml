@@ -60,7 +60,7 @@ jobs:
         run: |
           git config --global user.name "cert-manager-bot"
           git config --global user.email "cert-manager-bot@users.noreply.github.com"
-          git add -A && git commit -m "BOT: run 'make upgrade-klone' and 'make generate'" --signoff
+          git add -A && git commit -m "BOT: run 'make upgrade-kind-images'" --signoff
           git push -f origin "$SELF_UPGRADE_BRANCH"
 
       - if: ${{ steps.is-up-to-date.outputs.result != 'true' }}
@@ -92,6 +92,5 @@ jobs:
                 owner,
                 repo,
                 issue_number: result.data.number,
-                labels: ['skip-review']
               });
             }
