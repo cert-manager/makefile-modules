@@ -3,7 +3,37 @@
   extends: [
     'github>cert-manager/renovate-config:default.json5',
   ],
+  "customManagers": [
+    {
+      "customType": "jsonata",
+      "fileFormat": "yaml",
+      "managerFilePatterns": ["klone.yaml"],
+      "matchStrings": [
+        'targets.*.{\
+          "datasource": "git-refs",\
+          "versioning": "git",\
+          "depName": folder_name,\
+          "packageName": repo_url,\
+          "currentValue": repo_ref,\
+          "currentDigest": repo_hash\
+        }',
+      ]
+    }
+  ],
   packageRules: [
+    {
+      "groupName": 'Makefile Modules',
+      "matchManagers": ["custom.jsonata"],
+      "matchFileNames": ["klone.yaml"],
+      "postUpgradeTasks": {
+        "commands": [
+          "make vendor-go",
+          "make generate-klone",
+          "make generate"
+        ],
+        "executionMode": "branch",
+      }
+    },
     {
       matchFileNames: [
         '**/go.mod',
@@ -22,6 +52,5 @@
     // Exclude files that are sourced from makefile-modules and shouldn't be upgraded in projects using makefile-modules.
     'make/_shared/**',
     '.github/workflows/govulncheck.yaml',
-    '.github/workflows/make-self-upgrade.yaml',
   ],
 }
