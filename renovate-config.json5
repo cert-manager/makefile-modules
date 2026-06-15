@@ -32,10 +32,10 @@
           "make generate"
         ],
         "executionMode": "branch",
-        addLabels: [
-          'skip-review', // Adding label to allow PRs to automerge
-        ]
-      }
+      },
+      addLabels: [
+        'skip-review', // Adding label to allow PRs to automerge
+      ],
     },
     {
       matchFileNames: [
