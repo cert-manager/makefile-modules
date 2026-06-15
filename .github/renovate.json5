@@ -91,6 +91,7 @@
       matchPackageNames: [
         'github.com/google/go-containerregistry', // Release v0.21.6 was creating a havoc in our Prow cluster
         'hashicorp/vault', // Missing binaries in the latest release (v2.0.1), see https://developer.hashicorp.com/vault/docs/updates/release-notes#vault-2-0-1
+        'helm/helm', // Release v4.2.1 is borked, see https://github.com/helm/helm/issues/32214
       ],
     },
     {
