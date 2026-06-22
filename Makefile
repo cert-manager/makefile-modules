@@ -72,12 +72,15 @@ golangci_lint_config := .golangci.yaml # For `make generate-golangci-lint-config
 # Modules that are used in this repo:
 # - tools: allows us to download crane
 # - generate-verify: to allow renovate to run make generate after updating the `go.mod` files in this repo.
+# - boilerplate: to ensure all files have license boilerplate
 # - go: so that make go-tidy is triggered by make generate.
 #
 # Module files must be included in number order (00,01,02) to satisfy the
 # dependencies between them.
 include modules/tools/00_mod.mk
 include modules/generate-verify/00_mod.mk
+include modules/boilerplate/00_mod.mk
+include modules/boilerplate/01_mod.mk
 include modules/go/01_mod.mk
 include modules/generate-verify/02_mod.mk
 
@@ -119,10 +122,6 @@ learn-golang-shas:
 learn-image-shas: | $(NEEDS_CRANE)
 	@CRANE=$(CRANE) \
 		./scripts/learn_image_shas.sh
-
-.PHONY: verify-boilerplate
-verify-boilerplate: | $(NEEDS_BOILERSUITE)
-	$(BOILERSUITE) .
 
 # Test targets
 
