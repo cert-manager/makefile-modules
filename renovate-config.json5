@@ -36,6 +36,7 @@
       addLabels: [
         'skip-review', // Adding label to allow PRs to automerge
       ],
+      minimumReleaseAge: null,
     },
     {
       matchFileNames: [
