@@ -25,3 +25,13 @@ shared_verify_targets += verify-pinact
 ## @category [shared] Generate/ Verify
 fix-pinact: | $(NEEDS_PINACT)
 	$(PINACT) run --fix --verify-comment
+
+generate_gh_workflows_base_dir := $(dir $(lastword $(MAKEFILE_LIST)))/base/
+
+.PHONY: generate-gh-workflows
+## Generate base files in the repository
+## @category [shared] Generate/ Verify
+generate-gh-workflows:
+	cp -r $(generate_gh_workflows_base_dir)/. ./
+
+shared_generate_targets += generate-gh-workflows
