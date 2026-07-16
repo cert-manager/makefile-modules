@@ -39,6 +39,7 @@ $(bin_dir)/tools $(DOWNLOAD_DIR)/tools:
 
 checkhash_script := $(dir $(lastword $(MAKEFILE_LIST)))/util/checkhash.sh
 lock_script := $(dir $(lastword $(MAKEFILE_LIST)))/util/lock.sh
+verify_cache_script := $(dir $(lastword $(MAKEFILE_LIST)))/util/verify_cache.sh
 
 # $outfile is a variable in the lock script
 # Escape the dollar sign so it's passed literally to the shell script, not expanded by make
@@ -789,3 +790,17 @@ go-tools: $(go_tool_names:%=$(bin_dir)/tools/%)
 ## Download and setup all tools
 ## @category [shared] Tools
 tools: non-go-tools go-tools
+
+.PHONY: verify-cache
+## Verify the integrity of $(DOWNLOAD_DIR) after restoring from an untrusted
+## cache. Checks SHA-256 of downloaded binaries, removes files with mismatched
+## hashes and unknown files, and verifies the Go module cache via go.sum. Exits
+## non-zero if any corruption is detected. Intended to be run after cache
+## restore in CI environments where the cache write-side is not fully trusted
+## (e.g. node-local hostPath shared with low-trust presubmit jobs).
+## @category [shared] Tools
+verify-cache:
+	@$(verify_cache_script) $(DOWNLOAD_DIR) \
+		$(foreach t,$(non_go_tool_names),$(if $(value $(t)_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM),$(t)@$($(call uc,$(t))_VERSION)_$(HOST_OS)_$(HOST_ARCH)=$($(t)_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM))) \
+		go@$(VENDORED_GO_VERSION)_$(HOST_OS)_$(HOST_ARCH).tar.gz=$(go_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM) \
+		kubebuilder_tools_$(KUBEBUILDER_ASSETS_VERSION)_$(HOST_OS)_$(HOST_ARCH).tar.gz=$(kubebuilder_tools_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM)
