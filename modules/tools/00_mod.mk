@@ -287,22 +287,21 @@ tool_names :=
 #        the absolute path should be used when executing the binary
 #        in targets or in scripts, because it is agnostic to the
 #        working directory
+# - a $(XXX_DOWNLOAD_PATH) variable is generated
+#     -> this variable contains the path of the versioned binary in
+#        $(DOWNLOAD_DIR), which the unversioned target links to. Tools
+#        that are built from source override it in the go_dependency
+#        template below
 # - an unversioned target $(bin_dir)/tools/xxx is generated that
 #   creates a link to the corresponding versioned target:
-#   $(DOWNLOAD_DIR)/tools/xxx@$(XXX_VERSION)_$(HOST_OS)_$(HOST_ARCH)
+#   $(XXX_DOWNLOAD_PATH)
 define tool_defs
 tool_names += $1
 
 $(call uc,$1)_VERSION ?= $2
 NEEDS_$(call uc,$1) := $$(bin_dir)/tools/$1
 $(call uc,$1) := $$(CURDIR)/$$(bin_dir)/tools/$1
-
-# Create symlink from $(bin_dir)/tools/$1 to the versioned binary in $(DOWNLOAD_DIR)
-$$(bin_dir)/tools/$1: $$(bin_dir)/scratch/$(call uc,$1)_VERSION | $$(DOWNLOAD_DIR)/tools/$1@$$($(call uc,$1)_VERSION)_$$(HOST_OS)_$$(HOST_ARCH) $$(bin_dir)/tools
-	@# cd into tools dir and create relative symlink (e.g., ../downloaded/tools/helm@v4.0.1_darwin_arm64)
-	@# patsubst converts absolute path to relative by replacing $(bin_dir) with ..
-	@cd $$(dir $$@) && $$(LN) $$(patsubst $$(bin_dir)/%,../%,$$(word 1,$$|)) $$(notdir $$@)
-	@touch $$@ # making sure the target of the symlink is newer than *_VERSION
+$(call uc,$1)_DOWNLOAD_PATH := $$(DOWNLOAD_DIR)/tools/$1@$$($(call uc,$1)_VERSION)_$$(HOST_OS)_$$(HOST_ARCH)
 endef
 
 # For each tool in the tools list (e.g., "helm=v4.0.1"), split on "=" and call tool_defs
@@ -459,7 +458,15 @@ go_tool_names :=
 # Template for building Go-based tools from source using "go install"
 define go_dependency
 go_tool_names += $1
-$$(DOWNLOAD_DIR)/tools/$1@$($(call uc,$1)_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $$(NEEDS_GO) $$(DOWNLOAD_DIR)/tools
+
+# The binary is keyed on the Go version as well as the tool version, because a
+# tool built by an older Go cannot always parse a newer standard library. Without
+# this, a cached binary is never rebuilt after a Go upgrade: the download
+# directory is persisted between CI runs, so the stale binary is restored and
+# reused indefinitely.
+$(call uc,$1)_DOWNLOAD_PATH := $$(DOWNLOAD_DIR)/tools/$1@$($(call uc,$1)_VERSION)_go$$(VENDORED_GO_VERSION)_$(HOST_OS)_$(HOST_ARCH)
+
+$$($(call uc,$1)_DOWNLOAD_PATH): | $$(NEEDS_GO) $$(DOWNLOAD_DIR)/tools
 	@# 1. Use lock script to prevent concurrent builds of the same tool
 	@# 2. Install to temp dir using GOBIN, with GOWORK=off to ignore workspace files
 	@# 3. Move the binary to final location
@@ -470,6 +477,18 @@ $$(DOWNLOAD_DIR)/tools/$1@$($(call uc,$1)_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $$
 		rm -rf $$(outfile).dir
 endef
 $(call for_each_kv,go_dependency,$(go_dependencies))
+
+# Create the symlink from $(bin_dir)/tools/xxx to the versioned binary in
+# $(DOWNLOAD_DIR). This runs after the go_dependency template above, so that the
+# tools built from source link to their Go-version-specific binary.
+define tool_link_defs
+$$(bin_dir)/tools/$1: $$(bin_dir)/scratch/$(call uc,$1)_VERSION $(if $(filter $1,$(go_tool_names)),$$(bin_dir)/scratch/VENDORED_GO_VERSION) | $$($(call uc,$1)_DOWNLOAD_PATH) $$(bin_dir)/tools
+	@# cd into tools dir and create relative symlink (e.g., ../downloaded/tools/helm@v4.0.1_darwin_arm64)
+	@# patsubst converts absolute path to relative by replacing $(bin_dir) with ..
+	@cd $$(dir $$@) && $$(LN) $$(patsubst $$(bin_dir)/%,../%,$$(word 1,$$|)) $$(notdir $$@)
+	@touch $$@ # making sure the target of the symlink is newer than *_VERSION
+endef
+$(foreach tool_name,$(tool_names),$(eval $(call tool_link_defs,$(tool_name))))
 
 ##################
 # File downloads #
