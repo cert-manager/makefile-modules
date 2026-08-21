@@ -40,6 +40,14 @@ $(bin_dir)/tools $(DOWNLOAD_DIR)/tools:
 checkhash_script := $(dir $(lastword $(MAKEFILE_LIST)))/util/checkhash.sh
 lock_script := $(dir $(lastword $(MAKEFILE_LIST)))/util/lock.sh
 
+# GNU make executes recipe lines containing "$(MAKE)" even under -n/-q/-t
+# (they are treated as recursive make invocations). The verify-at-link recipes
+# below are such lines, so they guard on this variable to avoid hashing cached
+# binaries, or deleting mismatched ones, during a dry run. The single-letter
+# flags are the first word of MAKEFLAGS once long options (e.g.
+# --warn-undefined-variables, which contains an "n") are filtered out.
+dry_run := $(strip $(foreach flag,n q t,$(findstring $(flag),$(firstword -$(filter-out --%,$(MAKEFLAGS))))))
+
 # $outfile is a variable in the lock script
 # Escape the dollar sign so it's passed literally to the shell script, not expanded by make
 outfile := $$outfile
@@ -397,6 +405,17 @@ $(bin_dir)/tools/goroot: $(bin_dir)/scratch/VENDORED_GO_VERSION | $(GOVENDOR_DIR
 
 # Extract the tar to the $(GOVENDOR_DIR) directory, this directory is not cached across CI runs.
 $(GOVENDOR_DIR)/go@$(VENDORED_GO_VERSION)_$(HOST_OS)_$(HOST_ARCH)/goroot: | $(DOWNLOAD_DIR)/tools/go@$(VENDORED_GO_VERSION)_$(HOST_OS)_$(HOST_ARCH).tar.gz
+	@# The tarball lives in the persisted download cache but this directory does
+	@# not, so extraction happens long after the download-time hash check:
+	@# re-verify the cached tarball first, healing a mismatch like tool_link_defs
+	@# does for tool binaries. A poisoned Go toolchain would otherwise undermine
+	@# the go.sum/GOSUMDB verification that the go-installed tools rely on.
+	@if [ -z "$(dry_run)" ] && [ -z "$${LEARN_FILE:-}" ] && ! $(checkhash_script) $| $(go_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM) >/dev/null 2>&1; then \
+		echo "[verify] cache integrity check failed for the vendored Go tarball, re-downloading" >&2; \
+		rm -f $|; \
+		$(MAKE) --no-print-directory $|; \
+		$(checkhash_script) $| $(go_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM); \
+	fi
 	@# 1. Use lock script to prevent concurrent extraction
 	@# 2. Extract tar.gz to temp directory (creates "go" folder inside)
 	@# 3. Rename the extracted "go" directory to final location
@@ -522,7 +541,17 @@ $(call for_each_kv,go_dependency,$(go_dependencies))
 # would be linked and executed unverified. To close that gap the symlink is a
 # .PHONY target: on every build, before linking, the cached binary is re-hashed
 # against the reviewed SHA-256 in this file (the trust anchor). A mismatch
-# deletes the binary and re-downloads it, so a poisoned cache cannot be used.
+# deletes the binary, re-downloads it and verifies the replacement, failing the
+# build if it still does not match. The check runs at link time, not at exec
+# time, so it detects a poisoned cache and narrows -- but does not close -- the
+# window in which a concurrent writer to the cache could swap a binary between
+# verification and use.
+#
+# Each *_SHA256SUM variable must therefore hold the hash of the file stored at
+# the tool's download path: for tools downloaded as archives that is the
+# EXTRACTED BINARY, not the archive. This matters when adding tools through
+# ADDITIONAL_TOOLS in a consuming repository.
+#
 # Tools built from source with "go install" have no reviewed hash here; their
 # integrity comes from go.sum/GOSUMDB when they are built, and their staleness
 # is handled by keying the download path on the Go toolchain version (see
@@ -534,10 +563,11 @@ $$(bin_dir)/tools/$1: $$(bin_dir)/scratch/$(call uc,$1)_VERSION $(if $(filter $1
 	@# $1_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM is empty for go-installed tools, which
 	@# are skipped here: they are anchored by go.sum at build time, not by a hash.
 	@expected="$$($1_$$(HOST_OS)_$$(HOST_ARCH)_SHA256SUM)"; \
-		if [ -z "$$$${LEARN_FILE:-}" ] && [ -n "$$$$expected" ] && ! $$(checkhash_script) "$$($(call uc,$1)_DOWNLOAD_PATH)" "$$$$expected" >/dev/null 2>&1; then \
+		if [ -z "$$(dry_run)" ] && [ -z "$$$${LEARN_FILE:-}" ] && [ -n "$$$$expected" ] && ! $$(checkhash_script) "$$($(call uc,$1)_DOWNLOAD_PATH)" "$$$$expected" >/dev/null 2>&1; then \
 			echo "[verify] cache integrity check failed for $1, re-downloading" >&2; \
 			rm -f "$$($(call uc,$1)_DOWNLOAD_PATH)"; \
 			$$(MAKE) --no-print-directory "$$($(call uc,$1)_DOWNLOAD_PATH)"; \
+			$$(checkhash_script) "$$($(call uc,$1)_DOWNLOAD_PATH)" "$$$$expected" || { echo "[verify] $1 still does not match its reviewed hash after re-download; $1_$$(HOST_OS)_$$(HOST_ARCH)_SHA256SUM must be the hash of the stored binary, not the archive" >&2; exit 1; }; \
 		fi
 	@# The link is absolute in practice: DOWNLOAD_DIR defaults to a path outside
 	@# $(bin_dir). The patsubst makes it relative only when DOWNLOAD_DIR is
@@ -664,6 +694,11 @@ $(DOWNLOAD_DIR)/tools/kubebuilder_tools_$(KUBEBUILDER_ASSETS_VERSION)_$(HOST_OS)
 # their own reviewed hashes here for the verify-at-link check (see
 # tool_link_defs). Run "make learn-tools-shas" after bumping
 # KUBEBUILDER_ASSETS_VERSION to refresh these.
+#
+# If an extracted binary does not match its reviewed hash, the cached tarball
+# is deleted along with it: the tarball is the input the binary was extracted
+# from, so keeping it would make every retry re-extract the same bad bytes and
+# fail forever until someone cleared the cache by hand.
 etcd_linux_amd64_SHA256SUM=b8956dc9f7479b1f15c46d03edae5dd9db508932840f91a9818e67717fcb1850
 etcd_linux_arm64_SHA256SUM=6bb34361b70e114bd0a57f1ac899cade84ba951be23c50ed822005bc4243caeb
 etcd_darwin_amd64_SHA256SUM=4f5d3debf9fc20b5d9e7c5f8da03d9b3229cdfcbb10698881678aff7b9065528
@@ -677,14 +712,12 @@ kube-apiserver_darwin_arm64_SHA256SUM=d4f7ab96140f55048669dde973fc84c04d89e85e9f
 $(DOWNLOAD_DIR)/tools/etcd@$(KUBEBUILDER_ASSETS_VERSION)_$(HOST_OS)_$(HOST_ARCH): $(DOWNLOAD_DIR)/tools/kubebuilder_tools_$(KUBEBUILDER_ASSETS_VERSION)_$(HOST_OS)_$(HOST_ARCH).tar.gz | $(DOWNLOAD_DIR)/tools
 	@# Extract specific file from tarball using tar's -O flag (output to stdout)
 	@source $(lock_script) $@; \
-		tar xfO $< controller-tools/envtest/etcd > $(outfile) && chmod 775 $(outfile); \
-		$(checkhash_script) $(outfile) $(etcd_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM)
+		{ tar xfO $< controller-tools/envtest/etcd > $(outfile) && chmod 775 $(outfile) && $(checkhash_script) $(outfile) $(etcd_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM); } || { echo "[verify] deleting the cached kubebuilder_tools tarball; re-run make to re-download it" >&2; rm -f $<; exit 1; }
 
 $(DOWNLOAD_DIR)/tools/kube-apiserver@$(KUBEBUILDER_ASSETS_VERSION)_$(HOST_OS)_$(HOST_ARCH): $(DOWNLOAD_DIR)/tools/kubebuilder_tools_$(KUBEBUILDER_ASSETS_VERSION)_$(HOST_OS)_$(HOST_ARCH).tar.gz | $(DOWNLOAD_DIR)/tools
 	@# Extract specific file from tarball using tar's -O flag (output to stdout)
 	@source $(lock_script) $@; \
-		tar xfO $< controller-tools/envtest/kube-apiserver > $(outfile) && chmod 775 $(outfile); \
-		$(checkhash_script) $(outfile) $(kube-apiserver_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM)
+		{ tar xfO $< controller-tools/envtest/kube-apiserver > $(outfile) && chmod 775 $(outfile) && $(checkhash_script) $(outfile) $(kube-apiserver_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM); } || { echo "[verify] deleting the cached kubebuilder_tools tarball; re-run make to re-download it" >&2; rm -f $<; exit 1; }
 
 kyverno_linux_amd64_SHA256SUM=74d71bdd5300378e7fa6c88c8ac0b065e26341560ac6b9bf54b1e44ed7edadc5
 kyverno_linux_arm64_SHA256SUM=b68fb455650040cd85e1cacec4a46fdc630d7c3a105a21f41e6b42154d66e93b
