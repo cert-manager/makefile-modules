@@ -410,10 +410,11 @@ $(GOVENDOR_DIR)/go@$(VENDORED_GO_VERSION)_$(HOST_OS)_$(HOST_ARCH)/goroot: | $(DO
 	@# re-verify the cached tarball first, healing a mismatch like tool_link_defs
 	@# does for tool binaries. A poisoned Go toolchain would otherwise undermine
 	@# the go.sum/GOSUMDB verification that the go-installed tools rely on.
+	@# firstword strips the "vendor-go" goal appended to MAKE when vendoring.
 	@if [ -z "$(dry_run)" ] && [ -z "$${LEARN_FILE:-}" ] && ! $(checkhash_script) $| $(go_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM) >/dev/null 2>&1; then \
 		echo "[verify] cache integrity check failed for the vendored Go tarball, re-downloading" >&2; \
 		rm -f $|; \
-		$(MAKE) --no-print-directory $|; \
+		$(firstword $(MAKE)) --no-print-directory $| || exit 1; \
 		$(checkhash_script) $| $(go_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM); \
 	fi
 	@# 1. Use lock script to prevent concurrent extraction
@@ -562,18 +563,18 @@ $$(bin_dir)/tools/$1: $$(bin_dir)/scratch/$(call uc,$1)_VERSION $(if $(filter $1
 	@# Re-verify the cached binary against the reviewed hash before trusting it.
 	@# $1_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM is empty for go-installed tools, which
 	@# are skipped here: they are anchored by go.sum at build time, not by a hash.
+	@# firstword strips the "vendor-go" goal appended to MAKE when vendoring.
 	@expected="$$($1_$$(HOST_OS)_$$(HOST_ARCH)_SHA256SUM)"; \
 		if [ -z "$$(dry_run)" ] && [ -z "$$$${LEARN_FILE:-}" ] && [ -n "$$$$expected" ] && ! $$(checkhash_script) "$$($(call uc,$1)_DOWNLOAD_PATH)" "$$$$expected" >/dev/null 2>&1; then \
 			echo "[verify] cache integrity check failed for $1, re-downloading" >&2; \
 			rm -f "$$($(call uc,$1)_DOWNLOAD_PATH)"; \
-			$$(MAKE) --no-print-directory "$$($(call uc,$1)_DOWNLOAD_PATH)"; \
+			$$(firstword $$(MAKE)) --no-print-directory "$$($(call uc,$1)_DOWNLOAD_PATH)" || exit 1; \
 			$$(checkhash_script) "$$($(call uc,$1)_DOWNLOAD_PATH)" "$$$$expected" || { echo "[verify] $1 still does not match its reviewed hash after re-download; $1_$$(HOST_OS)_$$(HOST_ARCH)_SHA256SUM must be the hash of the stored binary, not the archive" >&2; exit 1; }; \
 		fi
 	@# The link is absolute in practice: DOWNLOAD_DIR defaults to a path outside
 	@# $(bin_dir). The patsubst makes it relative only when DOWNLOAD_DIR is
 	@# overridden to live under $(bin_dir).
 	@cd $$(dir $$@) && $$(LN) $$(patsubst $$(bin_dir)/%,../%,$$($(call uc,$1)_DOWNLOAD_PATH)) $$(notdir $$@)
-	@touch $$@ # making sure the target of the symlink is newer than *_VERSION
 endef
 $(foreach tool_name,$(tool_names),$(eval $(call tool_link_defs,$(tool_name))))
 
