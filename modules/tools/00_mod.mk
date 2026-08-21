@@ -340,7 +340,17 @@ NEEDS_GO = __require-go
 # The version of the Go toolchain that builds the go_dependencies tools, e.g.
 # "go1.27.0". When vendoring is disabled this is the system Go, which may
 # differ from VENDORED_GO_VERSION.
-GO_TOOLCHAIN_VERSION := $(shell go env GOVERSION 2>/dev/null)
+# GOTOOLCHAIN=local: never trigger a toolchain download while parsing this
+# file, and match the go$(VENDORED_GO_VERSION) form used when Go is vendored.
+# The awk pass keeps the value safe to embed in a target name: a devel
+# toolchain reports a multi-word GOVERSION, which would word-split the
+# generated rules.
+GO_TOOLCHAIN_VERSION := $(shell GOTOOLCHAIN=local go env GOVERSION 2>/dev/null | awk '{gsub(/[^A-Za-z0-9._-]/,"-"); print}')
+ifeq ($(GO_TOOLCHAIN_VERSION),)
+# Non-fatal so that targets which need no Go, e.g. "make help", still work
+# with no Go installed. Nothing can be built in that state anyway.
+GO_TOOLCHAIN_VERSION := unknown
+endif
 else
 export GOROOT := $(CURDIR)/$(bin_dir)/tools/goroot
 export PATH := $(CURDIR)/$(bin_dir)/tools/goroot/bin:$(PATH)
@@ -469,7 +479,7 @@ go_tool_names += $1
 # library. Without this, a cached binary is never rebuilt after a Go upgrade:
 # the download directory is persisted between CI runs, so the stale binary is
 # restored and reused indefinitely.
-$(call uc,$1)_DOWNLOAD_PATH := $$(DOWNLOAD_DIR)/tools/$1@$($(call uc,$1)_VERSION)_$$(GO_TOOLCHAIN_VERSION)_$(HOST_OS)_$(HOST_ARCH)
+$(call uc,$1)_DOWNLOAD_PATH := $$(DOWNLOAD_DIR)/tools/$1@$$($(call uc,$1)_VERSION)_$$(GO_TOOLCHAIN_VERSION)_$$(HOST_OS)_$$(HOST_ARCH)
 
 $$($(call uc,$1)_DOWNLOAD_PATH): | $$(NEEDS_GO) $$(DOWNLOAD_DIR)/tools
 	@# 1. Use lock script to prevent concurrent builds of the same tool
@@ -492,11 +502,14 @@ $(call for_each_kv,go_dependency,$(go_dependencies))
 # In the steady state the symlink resolves to that same binary, so their
 # modification times are equal and nothing is remade. The stamp files catch
 # version changes that mtimes cannot, e.g. reverting to an older, already-cached
-# tool or Go version.
+# tool or Go version. The GO_TOOLCHAIN_VERSION stamp is produced by the generic
+# %_VERSION pattern rule above, which stamps the value of the make variable of
+# the same name.
 define tool_link_defs
 $$(bin_dir)/tools/$1: $$(bin_dir)/scratch/$(call uc,$1)_VERSION $(if $(filter $1,$(go_tool_names)),$$(bin_dir)/scratch/GO_TOOLCHAIN_VERSION) $$($(call uc,$1)_DOWNLOAD_PATH) | $$(bin_dir)/tools
-	@# cd into tools dir and create relative symlink (e.g., ../downloaded/tools/helm@v4.0.1_darwin_arm64)
-	@# patsubst converts absolute path to relative by replacing $(bin_dir) with ..
+	@# The link is absolute in practice: DOWNLOAD_DIR defaults to a path outside
+	@# $(bin_dir). The patsubst makes it relative only when DOWNLOAD_DIR is
+	@# overridden to live under $(bin_dir).
 	@cd $$(dir $$@) && $$(LN) $$(patsubst $$(bin_dir)/%,../%,$$($(call uc,$1)_DOWNLOAD_PATH)) $$(notdir $$@)
 	@touch $$@ # making sure the target of the symlink is newer than *_VERSION
 endef
