@@ -74,5 +74,30 @@ for project in "${script_dir}"/e2e-projects/*; do
             echo "> Running make ${target}"
             make "${target}"
         done
+
+        # Assert that a Go toolchain version change rebuilds and re-links a
+        # go_dependency tool, and that reverting re-links the cached binary
+        # without rebuilding it. An isolated DOWNLOAD_DIR keeps the fake
+        # toolchain key out of the shared cache.
+        if printf '%s\n' "${modules_to_copy[@]}" | grep -qx "tools"; then
+            echo "> Asserting Go toolchain cache invalidation for gojq"
+            dl_dir="${tmp_dir}/e2e_download"
+
+            make DOWNLOAD_DIR="${dl_dir}" _bin/tools/gojq
+            original_target=$(readlink _bin/tools/gojq)
+
+            make DOWNLOAD_DIR="${dl_dir}" GO_TOOLCHAIN_VERSION=go0.0.0-test _bin/tools/gojq
+            fake_target=$(readlink _bin/tools/gojq)
+            [[ "${fake_target}" == *"_go0.0.0-test_"* ]]
+            [[ "${fake_target}" != "${original_target}" ]]
+
+            # A rebuild produces a new file (new inode); the relink recipe
+            # touches the existing one, so compare inodes, not mtimes.
+            inode_before=$(stat -c %i "${original_target}" 2>/dev/null || stat -f %i "${original_target}")
+            make DOWNLOAD_DIR="${dl_dir}" _bin/tools/gojq
+            [[ "$(readlink _bin/tools/gojq)" == "${original_target}" ]]
+            inode_after=$(stat -c %i "${original_target}" 2>/dev/null || stat -f %i "${original_target}")
+            [[ "${inode_before}" == "${inode_after}" ]]
+        fi
     popd > /dev/null
 done

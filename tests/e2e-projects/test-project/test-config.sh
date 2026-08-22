@@ -37,5 +37,6 @@ targets_to_run+=(
     "_bin/tools/kind"
     "_bin/tools/kubectl"
     "_bin/tools/etcd"
+    "_bin/tools/gojq"
     "vendor-go"
 )
