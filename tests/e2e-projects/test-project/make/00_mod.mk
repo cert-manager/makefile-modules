@@ -31,3 +31,4 @@ deploy_name := test-project
 deploy_namespace := cert-manager
 
 golangci_lint_config := .golangci.yaml
+kube_api_linter_config := .golangci.kube-api-linter.yaml

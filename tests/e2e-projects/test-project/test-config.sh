@@ -22,6 +22,7 @@ modules_to_copy+=(
     "go"
     "help"
     "kind"
+    "kube-api-linter"
     "oci-build"
     "oci-publish"
     "repository-base"
@@ -37,5 +38,6 @@ targets_to_run+=(
     "_bin/tools/kind"
     "_bin/tools/kubectl"
     "_bin/tools/etcd"
+    "_bin/tools/gojq"
     "vendor-go"
 )
