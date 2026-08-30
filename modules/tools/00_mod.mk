@@ -180,9 +180,12 @@ tools += cmrel=v1.12.15-0.20241121151736-e3cbe5171488
 # renovate: datasource=go packageName=github.com/golangci/golangci-lint/v2
 golangci_lint_version := v2.13.1
 tools += golangci-lint=$(golangci_lint_version)
+# Projects may pin an older kube-api-linter in their make/00_mod.mk, which is
+# included before this file, e.g. to defer acting on findings introduced by a
+# newer snapshot.
 # https://pkg.go.dev/sigs.k8s.io/kube-api-linter?tab=versions
 # renovate: datasource=go packageName=sigs.k8s.io/kube-api-linter
-kube_api_linter_version := v0.0.0-20260716143926-092fe0c72997
+kube_api_linter_version ?= v0.0.0-20260716143926-092fe0c72997
 tools += kube-api-linter=$(golangci_lint_version)_$(kube_api_linter_version)
 # https://pkg.go.dev/golang.org/x/vuln?tab=versions
 # renovate: datasource=go packageName=golang.org/x/vuln
