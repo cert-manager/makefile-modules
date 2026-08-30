@@ -125,3 +125,21 @@ $(foreach build_name,$(push_names),$(eval $(call oci_sign_target_per_image,$(bui
 ## If a signature already exists, this will not overwrite it.
 ## @category [shared] Publish
 $(oci_sign_targets):
+
+
+oci_sbom_upload_targets := $(push_names:%=oci-upload-sbom-%)
+
+.PHONY: $(oci_sbom_upload_targets)
+## Upload SPDX SBOM files from oci-build to the current GitHub release.
+## @category [shared] Publish
+$(oci_sbom_upload_targets): oci-upload-sbom-%: oci-build-% | $(NEEDS_GH)
+	$(eval layout_path := $(oci_layout_path_$*))
+	@if [ -d "$(CURDIR)/$(layout_path).sbom" ]; then \
+	  tag="$${GITHUB_REF_NAME:-$$(git describe --tags --exact-match 2>/dev/null)}"; \
+	  for f in "$(CURDIR)/$(layout_path).sbom"/*.spdx.json; do \
+	    [ -f "$$f" ] || continue; \
+	    $(GH) release upload "$$tag" "$$f" --clobber; \
+	  done; \
+	else \
+	  echo "No SBOM directory at $(layout_path).sbom"; exit 1; \
+	fi
