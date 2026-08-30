@@ -133,13 +133,16 @@ oci_sbom_upload_targets := $(push_names:%=oci-upload-sbom-%)
 ## Upload SPDX SBOM files from oci-build to the current GitHub release.
 ## @category [shared] Publish
 $(oci_sbom_upload_targets): oci-upload-sbom-%: oci-build-% | $(NEEDS_GH)
-	$(eval layout_path := $(oci_layout_path_$*))
-	@if [ -d "$(CURDIR)/$(layout_path).sbom" ]; then \
+	@layout_path='$(oci_layout_path_$*)'; \
+	if [ -d "$(CURDIR)/$$layout_path.sbom" ]; then \
 	  tag="$${GITHUB_REF_NAME:-$$(git describe --tags --exact-match 2>/dev/null)}"; \
-	  for f in "$(CURDIR)/$(layout_path).sbom"/*.spdx.json; do \
+	  if [ -z "$$tag" ]; then \
+	    echo "Could not determine release tag (set GITHUB_REF_NAME or run from a tagged commit)"; exit 1; \
+	  fi; \
+	  for f in "$(CURDIR)/$$layout_path.sbom"/*.spdx.json; do \
 	    [ -f "$$f" ] || continue; \
 	    $(GH) release upload "$$tag" "$$f" --clobber; \
 	  done; \
 	else \
-	  echo "No SBOM directory at $(layout_path).sbom"; exit 1; \
+	  echo "No SBOM directory at $$layout_path.sbom"; exit 1; \
 	fi
