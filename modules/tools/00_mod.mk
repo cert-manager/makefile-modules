@@ -109,7 +109,7 @@ tools += ytt=v0.55.2
 tools += rclone=v1.75.0
 # https://github.com/istio/istio/releases
 # renovate: datasource=github-releases packageName=istio/istio
-tools += istioctl=1.30.3
+tools += istioctl=1.30.4
 
 ### go packages
 # https://pkg.go.dev/sigs.k8s.io/controller-tools/cmd/controller-gen?tab=versions
@@ -147,7 +147,7 @@ tools += boilersuite=v0.2.0
 tools += gomarkdoc=v1.1.0
 # https://pkg.go.dev/oras.land/oras/cmd/oras?tab=versions
 # renovate: datasource=go packageName=oras.land/oras
-tools += oras=v1.3.3
+tools += oras=v1.3.4
 # https://pkg.go.dev/github.com/onsi/ginkgo/v2/ginkgo?tab=versions
 # The gingko version should be kept in sync with the version used in code.
 # If there is no go.mod file (which is only the case for the makefile-modules
@@ -163,7 +163,7 @@ tools += klone=v0.3.0
 tools += goreleaser=v2.18.0
 # https://pkg.go.dev/github.com/anchore/syft/cmd/syft?tab=versions
 # renovate: datasource=go packageName=github.com/anchore/syft
-tools += syft=v1.51.0
+tools += syft=v1.51.1
 # https://github.com/cert-manager/helm-tool/releases
 # renovate: datasource=github-releases packageName=cert-manager/helm-tool
 tools += helm-tool=v0.6.0
@@ -178,7 +178,7 @@ tools += cmctl=v2.5.0
 tools += cmrel=v1.12.15-0.20241121151736-e3cbe5171488
 # https://pkg.go.dev/github.com/golangci/golangci-lint/v2/cmd/golangci-lint?tab=versions
 # renovate: datasource=go packageName=github.com/golangci/golangci-lint/v2
-golangci_lint_version := v2.13.1
+golangci_lint_version := v2.13.2
 tools += golangci-lint=$(golangci_lint_version)
 # Projects may pin an older kube-api-linter in their make/00_mod.mk, which is
 # included before this file, e.g. to defer acting on findings introduced by a
@@ -756,10 +756,10 @@ $(DOWNLOAD_DIR)/tools/rclone@$(RCLONE_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(DOWN
 		chmod +x $(outfile); \
 		rm -f $(outfile).zip
 
-istioctl_linux_amd64_SHA256SUM=55ada076ba1b37af49e8a24e5e539b4abccabdb33894c923279edd293eea3993
-istioctl_linux_arm64_SHA256SUM=926d265818e8ab69de9f81bfe78447c3bc8f4ae32a356a39545b790bfcfd63e5
-istioctl_darwin_amd64_SHA256SUM=9a2b70d8257861156336c89bf33251b90cc77924116c10a281d39d996d4f0bac
-istioctl_darwin_arm64_SHA256SUM=4d78e3effac3253c9348cef73563af405dc3429bea9536eae98a724ee81761c7
+istioctl_linux_amd64_SHA256SUM=7a317e5c85098d139ee1975b995bc8e872e218f14a90afa19ff9630151500245
+istioctl_linux_arm64_SHA256SUM=bfefa75607dc57e0f87fd6dd6e08a94fba9a59a144049c565cc0aefb9502d1a0
+istioctl_darwin_amd64_SHA256SUM=5a7bd9a0b66c63fbb9b56902f554fae127bbd8e8c4cb5b61ec76894685a2847c
+istioctl_darwin_arm64_SHA256SUM=87fff73da374933f6931df6be7148c392f12060ed54abf03065b8e5506a30c3b
 
 .PRECIOUS: $(DOWNLOAD_DIR)/tools/istioctl@$(ISTIOCTL_VERSION)_$(HOST_OS)_$(HOST_ARCH)
 $(DOWNLOAD_DIR)/tools/istioctl@$(ISTIOCTL_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(DOWNLOAD_DIR)/tools
