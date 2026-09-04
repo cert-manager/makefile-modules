@@ -82,7 +82,7 @@ tools += kubectl=v1.37.0
 tools += kind=v0.33.0
 # https://www.vaultproject.io/downloads
 # renovate: datasource=github-releases packageName=hashicorp/vault
-tools += vault=v2.0.4
+tools += vault=v2.1.0
 # https://github.com/Azure/azure-workload-identity/releases
 # renovate: datasource=github-releases packageName=Azure/azure-workload-identity
 tools += azwi=v1.6.1
@@ -596,10 +596,10 @@ $(DOWNLOAD_DIR)/tools/kind@$(KIND_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(DOWNLOAD
 		$(checkhash_script) $(outfile) $(kind_$(HOST_OS)_$(HOST_ARCH)_SHA256SUM); \
 		chmod +x $(outfile)
 
-vault_linux_amd64_SHA256SUM=7429e7d85f8ef29df063701c49420f7984a0ae2c8511c026cc75edfbbb2df387
-vault_linux_arm64_SHA256SUM=87bb68fdd04ca90cd4cf54f8cd783a037fbf860b73d85e6697f6129dac49c683
-vault_darwin_amd64_SHA256SUM=79d29add23b2ca4144927b5d3d062ccd6f9345c5cdbf5b3624652ea9a5100261
-vault_darwin_arm64_SHA256SUM=73b36e75eedcf949262707d9169a793a3901a0990306329163f3ac94df31d5fa
+vault_linux_amd64_SHA256SUM=08e8a13d29d20c5e28ef5e2c187bf3a2e84712a43615de1b3d24701ad9aab972
+vault_linux_arm64_SHA256SUM=319b3eb7b0c2ad218453f5d1af5c23cac81a024db3a07ccd2494ecd31f2090c3
+vault_darwin_amd64_SHA256SUM=4ec95a88b3ab2a4f367da41ab98946204d5d85b36b26b71c6685db997dfde36e
+vault_darwin_arm64_SHA256SUM=c6589dc658f72ebd2792b1fba7b2e53413367ad673ae2513cfdec6422ed4da2c
 
 .PRECIOUS: $(DOWNLOAD_DIR)/tools/vault@$(VAULT_VERSION)_$(HOST_OS)_$(HOST_ARCH)
 $(DOWNLOAD_DIR)/tools/vault@$(VAULT_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(DOWNLOAD_DIR)/tools
