@@ -14,7 +14,7 @@ jobs:
     name: Validate renovate config
     runs-on: ubuntu-latest
     container:
-      image: renovate/renovate:44.57.2@sha256:94230bf485d9f3b469eb3f63e05e960e7709084101acf159b132f2a3e2a225c7
+      image: renovate/renovate:44.58.0@sha256:20fe6c849d43c6ea039a66bd56eacb9fd48862a43145673230daaf963bbdad7d
       options: --user root
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
