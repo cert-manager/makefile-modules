@@ -136,9 +136,9 @@ tools += crane=v0.22.0
 # https://pkg.go.dev/google.golang.org/protobuf/cmd/protoc-gen-go?tab=versions
 # renovate: datasource=go packageName=google.golang.org/protobuf
 tools += protoc-gen-go=v1.36.12
-# https://pkg.go.dev/github.com/sigstore/cosign/v2/cmd/cosign?tab=versions
-# renovate: datasource=go packageName=github.com/sigstore/cosign/v2
-tools += cosign=v2.6.5
+# https://pkg.go.dev/github.com/sigstore/cosign/v3/cmd/cosign?tab=versions
+# renovate: datasource=go packageName=github.com/sigstore/cosign/v3
+tools += cosign=v3.1.3
 # https://pkg.go.dev/github.com/cert-manager/boilersuite?tab=versions
 # renovate: datasource=go packageName=github.com/cert-manager/boilersuite
 tools += boilersuite=v0.2.0
@@ -431,7 +431,7 @@ go_dependencies += kustomize=sigs.k8s.io/kustomize/kustomize/v5
 go_dependencies += gojq=github.com/itchyny/gojq/cmd/gojq
 go_dependencies += crane=github.com/google/go-containerregistry/cmd/crane
 go_dependencies += protoc-gen-go=google.golang.org/protobuf/cmd/protoc-gen-go
-go_dependencies += cosign=github.com/sigstore/cosign/v2/cmd/cosign
+go_dependencies += cosign=github.com/sigstore/cosign/v3/cmd/cosign
 go_dependencies += boilersuite=github.com/cert-manager/boilersuite
 go_dependencies += gomarkdoc=github.com/princjef/gomarkdoc/cmd/gomarkdoc
 go_dependencies += oras=oras.land/oras/cmd/oras

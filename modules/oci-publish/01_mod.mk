@@ -93,10 +93,11 @@ $(foreach build_name,$(push_names),$(eval $(call oci_push_target_per_image,$(bui
 .PHONY: $(oci_push_targets)
 ## Build and push OCI image.
 ## If the tag already exists, this target will overwrite it.
-## If an identical image was already built before, we will add a new tag to it, but we will not sign it again.
+## Signatures are attached to the image as Sigstore bundles using the OCI 1.1
+## referrers API (with a fallback :sha256-0000001 tag on registries that do not
+## support that API). Pushing the same digest again appends another signature.
 ## Expected pushed images:
 ## - :v1.2.3, @sha256:0000001
-## - :v1.2.3.sig, :sha256-0000001.sig
 ## @category [shared] Publish
 $(oci_push_targets):
 
@@ -108,11 +109,13 @@ $(oci_maybe_push_targets):
 # Define sign target 
 # $1 - build_name
 # $2 - image_name
+# cosign v3 attaches signatures as Sigstore bundles via the OCI 1.1 referrers
+# API, so the legacy :sha256-<digest>.sig tag we used to probe for "already
+# signed" no longer exists and there is no cheap tag-based idempotency check.
 define oci_sign_target
 .PHONY: $(call sanitize_target,oci-sign-$2)
-$(call sanitize_target,oci-sign-$2): $(oci_digest_path_$1) | $(NEEDS_CRANE) $(NEEDS_COSIGN)
-	$$(CRANE) $(crane_flags_$1) manifest $2:$$(subst :,-,$$(call oci_digest,$1)).sig > /dev/null 2>&1 || \
-		$$(COSIGN) sign --yes=true $(cosign_flags_$1) "$2@$$(call oci_digest,$1)"
+$(call sanitize_target,oci-sign-$2): $(oci_digest_path_$1) | $(NEEDS_COSIGN)
+	$$(COSIGN) sign --yes=true $(cosign_flags_$1) "$2@$$(call oci_digest,$1)"
 
 oci-sign-$1: $(call sanitize_target,oci-sign-$2)
 endef
@@ -122,6 +125,7 @@ $(foreach build_name,$(push_names),$(eval $(call oci_sign_target_per_image,$(bui
 
 .PHONY: $(oci_sign_targets)
 ## Sign an OCI image.
-## If a signature already exists, this will not overwrite it.
+## Signing is not idempotent: signing the same digest again appends another
+## signature bundle.
 ## @category [shared] Publish
 $(oci_sign_targets):
