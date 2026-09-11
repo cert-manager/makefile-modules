@@ -95,7 +95,9 @@ $(foreach build_name,$(push_names),$(eval $(call oci_push_target_per_image,$(bui
 ## If the tag already exists, this target will overwrite it.
 ## Signatures are attached to the image as Sigstore bundles using the OCI 1.1
 ## referrers API (with a fallback :sha256-0000001 tag on registries that do not
-## support that API). Pushing the same digest again appends another signature.
+## support that API).
+## If an identical image was already built and signed before, we will add a new
+## tag to it, but we will not sign it again.
 ## Expected pushed images:
 ## - :v1.2.3, @sha256:0000001
 ## @category [shared] Publish
@@ -110,12 +112,17 @@ $(oci_maybe_push_targets):
 # $1 - build_name
 # $2 - image_name
 # cosign v3 attaches signatures as Sigstore bundles via the OCI 1.1 referrers
-# API, so the legacy :sha256-<digest>.sig tag we used to probe for "already
-# signed" no longer exists and there is no cheap tag-based idempotency check.
+# API, so the legacy :sha256-<digest>.sig tag can no longer be probed to skip
+# re-signing. "cosign tree" reports signatures in both the legacy format
+# ("Signatures for an image tag") and the bundle format
+# ("https://sigstore.dev/cosign/sign/v1 artifacts via OCI referrer"), so probe
+# with that instead. If the probe fails for any reason, we sign again; cosign
+# appends a second signature rather than failing.
 define oci_sign_target
 .PHONY: $(call sanitize_target,oci-sign-$2)
 $(call sanitize_target,oci-sign-$2): $(oci_digest_path_$1) | $(NEEDS_COSIGN)
-	$$(COSIGN) sign --yes=true $(cosign_flags_$1) "$2@$$(call oci_digest,$1)"
+	$$(COSIGN) tree "$2@$$(call oci_digest,$1)" 2> /dev/null | grep -qE "Signatures|sign/v1" || \
+		$$(COSIGN) sign --yes=true $(cosign_flags_$1) "$2@$$(call oci_digest,$1)"
 
 oci-sign-$1: $(call sanitize_target,oci-sign-$2)
 endef
@@ -125,7 +132,6 @@ $(foreach build_name,$(push_names),$(eval $(call oci_sign_target_per_image,$(bui
 
 .PHONY: $(oci_sign_targets)
 ## Sign an OCI image.
-## Signing is not idempotent: signing the same digest again appends another
-## signature bundle.
+## If a signature already exists, this will not overwrite it.
 ## @category [shared] Publish
 $(oci_sign_targets):
