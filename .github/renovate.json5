@@ -7,12 +7,11 @@
     {
       customType: 'regex',
       managerFilePatterns: [
-        'modules/cert-manager/**/*.mk',
-        'modules/tools/**/*.mk',
+        'modules/**/*.mk',
       ],
       matchStrings: [
-        '(?:^|\\r\\n|\\r|\\n)#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+packageName=(?<packageName>\\S+)(?:^|\\r\\n|\\r|\\n)\\S+ \\+= \\S+=(?<currentValue>\\S+)',
-        '(?:^|\\r\\n|\\r|\\n)#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+packageName=(?<packageName>\\S+)(?:^|\\r\\n|\\r|\\n)\\S+ (:|\\?)= (?<currentValue>\\S+)'
+        '(?:^|\\r\\n|\\r|\\n)#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+packageName=(?<packageName>\\S+)(?:^|\\r\\n|\\r|\\n)\\S+\\s+(?:\\+=\\s+[^=]*=|(:|\\?)\\s*=\\s*)(?<currentValue>[^\\s:@]+)\\s*(?:\\r\\n|\\r|\\n|$)',
+        '(?:^|\\r\\n|\\r|\\n)#\\s*renovate:\\s*datasource=(?<datasource>\\S+)(?:\\s+packageName=(?<packageName>\\S+))?(?:^|\\r\\n|\\r|\\n)\\S+\\s+:=\\s+(?<depName>[^@:\\s]+):(?<currentValue>[^@\\s]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?',
       ],
     },
     {

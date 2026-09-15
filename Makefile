@@ -88,11 +88,6 @@ include modules/generate-verify/02_mod.mk
 
 ## Upgrade targets
 
-.PHONY: upgrade-base-images
-upgrade-base-images: | $(NEEDS_CRANE)
-	@CRANE=$(CRANE) \
-		./scripts/upgrade_base_images.sh
-
 # Upgrade the kind images to the latest available version from
 # the kind release description. This script is useful when kind publishes
 # a new kubernetes image and updates the kind release description.
@@ -135,7 +130,6 @@ test-e2e:
 help: ## Show this help
 	@echo "Usage: make [target] ..."
 	@echo
-	@echo "make upgrade-base-images"
 	@echo "make upgrade-kind-images"
 	@echo
 	@echo "make learn-golang-shas"
