@@ -456,7 +456,7 @@ go_dependencies += gh=github.com/cli/cli/v2/cmd/gh
 go_dependencies += gci=github.com/daixiang0/gci
 go_dependencies += yamlfmt=github.com/google/yamlfmt/cmd/yamlfmt
 go_dependencies += kubeconform=github.com/yannh/kubeconform/cmd/kubeconform
-go_dependencies += pinact=github.com/suzuki-shunsuke/pinact/v4/cmd/pinact
+go_dependencies += pinact=github.com/suzuki-shunsuke/pinact/v5/cmd/pinact
 
 #################
 # go build tags #
