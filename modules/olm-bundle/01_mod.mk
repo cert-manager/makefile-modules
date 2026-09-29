@@ -95,6 +95,10 @@ oci-build-olm: olm-bundle | $(NEEDS_OLM-TO-OCI)
 
 # $1 upstream repo
 # $2 fork
+#
+# The bundle directory is named after the CSV version, which has no "v" prefix.
+# Why?: https://github.com/redhat-openshift-ecosystem/operator-pipelines/blob/main/docs/users/static_checks.md#check_operator_version_directory_name
+# > the `<version>` part should match the version defined in the CSV file
 define olm_publish_targets
 .PHONY: olm-publish-$(subst /,-,$1)
 olm-publish-$(subst /,-,$1): olm-bundle | $(NEEDS_GH) $(NEEDS_YQ) $(bin_dir)/scratch
@@ -104,8 +108,8 @@ olm-publish-$(subst /,-,$1): olm-bundle | $(NEEDS_GH) $(NEEDS_YQ) $(bin_dir)/scr
 	cd $(bin_dir)/scratch/git/$2 && \
 		git checkout -B $(VERSION) && \
 		mkdir -p operators/$(olm_project_name) && \
-		cp -r $(abspath $(olm_bundle_dir)) operators/$(olm_project_name)/$(VERSION) && \
-		git add operators/$(olm_project_name)/$(VERSION) && \
+		cp -r $(abspath $(olm_bundle_dir)) operators/$(olm_project_name)/$(VERSION:v%=%) && \
+		git add operators/$(olm_project_name)/$(VERSION:v%=%) && \
 		touch operators/$(olm_project_name)/ci.yaml && \
 		$(if $(and $(findstring redhat-openshift-ecosystem/certified-operators,$1),$(olm_project_id)), \
 			$(YQ) -i '.cert_project_id = "$(olm_project_id)"' operators/$(olm_project_name)/ci.yaml &&) \
