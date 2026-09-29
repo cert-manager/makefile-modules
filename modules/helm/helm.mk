@@ -128,8 +128,10 @@ shared_verify_targets += verify-helm-unittest
 $(bin_dir)/scratch/kyverno:
 	@mkdir -p $@
 
+# Pinned to a release branch because kyverno/policies deleted pod-security/ from main in
+# https://github.com/kyverno/policies/pull/1544. Keep it in step with the kyverno tool version.
 $(bin_dir)/scratch/kyverno/pod-security-policy.yaml: | $(NEEDS_KUSTOMIZE) $(bin_dir)/scratch/kyverno
-	@$(KUSTOMIZE) build https://github.com/kyverno/policies/pod-security/enforce > $@
+	@$(KUSTOMIZE) build "https://github.com/kyverno/policies/pod-security/enforce?ref=release-1.19" > $@
 
 # Extra arguments for kyverno apply.
 kyverno_apply_extra_args :=
