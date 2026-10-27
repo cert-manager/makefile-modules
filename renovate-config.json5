@@ -56,5 +56,6 @@
     // Exclude files that are sourced from makefile-modules and shouldn't be upgraded in projects using makefile-modules.
     'make/_shared/**',
     '.github/workflows/govulncheck.yaml',
+    '.github/workflows/scorecards.yaml',
   ],
 }
