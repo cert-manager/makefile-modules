@@ -129,7 +129,7 @@ tools += gotestsum=v1.13.0
 tools += kustomize=v5.8.3
 # https://pkg.go.dev/github.com/itchyny/gojq?tab=versions
 # renovate: datasource=go packageName=github.com/itchyny/gojq
-tools += gojq=v0.12.19
+tools += gojq=v0.12.20
 # https://pkg.go.dev/github.com/google/go-containerregistry/pkg/crane?tab=versions
 # renovate: datasource=go packageName=github.com/google/go-containerregistry
 tools += crane=v0.22.1
@@ -160,10 +160,10 @@ tools += ginkgo=$(detected_ginkgo_version)
 tools += klone=v0.3.0
 # https://pkg.go.dev/github.com/goreleaser/goreleaser/v2?tab=versions
 # renovate: datasource=go packageName=github.com/goreleaser/goreleaser/v2
-tools += goreleaser=v2.19.0
+tools += goreleaser=v2.20.0
 # https://pkg.go.dev/github.com/anchore/syft/cmd/syft?tab=versions
 # renovate: datasource=go packageName=github.com/anchore/syft
-tools += syft=v1.55.0
+tools += syft=v1.56.0
 # https://github.com/cert-manager/helm-tool/releases
 # renovate: datasource=github-releases packageName=cert-manager/helm-tool
 tools += helm-tool=v0.6.0
@@ -185,7 +185,7 @@ tools += golangci-lint=$(golangci_lint_version)
 # newer snapshot.
 # https://pkg.go.dev/sigs.k8s.io/kube-api-linter?tab=versions
 # renovate: datasource=go packageName=sigs.k8s.io/kube-api-linter
-kube_api_linter_version ?= v0.0.0-20261012124120-79b557aa8c8d
+kube_api_linter_version ?= v0.0.0-20261030144752-d90122c89087
 tools += kube-api-linter=$(golangci_lint_version)_$(kube_api_linter_version)
 # https://pkg.go.dev/golang.org/x/vuln?tab=versions
 # renovate: datasource=go packageName=golang.org/x/vuln
@@ -225,7 +225,7 @@ tools += defaulter-gen=$(K8S_CODEGEN_VERSION)
 tools += conversion-gen=$(K8S_CODEGEN_VERSION)
 # https://github.com/kubernetes/kube-openapi
 # renovate: datasource=go packageName=k8s.io/kube-openapi
-tools += openapi-gen=v0.0.0-20261014044854-ca3452a79603
+tools += openapi-gen=v0.0.0-20261104182252-5bee61fc5225
 
 # https://raw.githubusercontent.com/kubernetes-sigs/controller-tools/master/envtest-releases.yaml
 # FIXME: Find a way to configure Renovate to suggest upgrades
