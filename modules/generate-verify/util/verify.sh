@@ -31,7 +31,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-projectdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../../../.." && pwd )"
+projectdir="$(git rev-parse --show-toplevel)"
 
 cd "${projectdir}"
 
