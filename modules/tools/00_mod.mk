@@ -198,7 +198,7 @@ tools += operator-sdk=v1.42.3
 tools += gh=v2.105.0
 # https://github.com/redhat-openshift-ecosystem/openshift-preflight/releases
 # renovate: datasource=github-releases packageName=redhat-openshift-ecosystem/openshift-preflight
-tools += preflight=1.22.0
+tools += preflight=1.23.0
 # https://github.com/daixiang0/gci/releases
 # renovate: datasource=github-releases packageName=daixiang0/gci
 tools += gci=v0.14.0
@@ -225,7 +225,7 @@ tools += defaulter-gen=$(K8S_CODEGEN_VERSION)
 tools += conversion-gen=$(K8S_CODEGEN_VERSION)
 # https://github.com/kubernetes/kube-openapi
 # renovate: datasource=go packageName=k8s.io/kube-openapi
-tools += openapi-gen=v0.0.0-20261104182252-5bee61fc5225
+tools += openapi-gen=v0.0.0-20261124193638-7c5f465a2be7
 
 # https://raw.githubusercontent.com/kubernetes-sigs/controller-tools/master/envtest-releases.yaml
 # FIXME: Find a way to configure Renovate to suggest upgrades
@@ -773,10 +773,10 @@ $(DOWNLOAD_DIR)/tools/istioctl@$(ISTIOCTL_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(
 		chmod +x $(outfile); \
 		rm $(outfile).tar.gz
 
-preflight_linux_amd64_SHA256SUM=1451ed8763f209f4d4a63848d9d62d1d40653a247db43d7606feb28eadbbd99b
-preflight_linux_arm64_SHA256SUM=ddf0cb33b23b53cb8dae62e930a0591d0dc55b9ccc7da4cea649bfdce9d75f5f
-preflight_darwin_amd64_SHA256SUM=beadfa07db093cec051b3c51f6ceb4a9e75026dab97a4be54b6d6b83743083bb
-preflight_darwin_arm64_SHA256SUM=21f6c8186081fd268b57069a57ca40012f678a4a8b3d9543a13720cb8b69ff3c
+preflight_linux_amd64_SHA256SUM=f90880b27b586529acab8b950b65bd2793557e4a679672cfc2376b9aeaeee138
+preflight_linux_arm64_SHA256SUM=f6af4e62e46e34e121128a6d98705e7cf7575dd10083eb828dc6ad518754e0b3
+preflight_darwin_amd64_SHA256SUM=4a0c23121b60d89e78b2c1d667a78d4b348f8a83a91cde09441139f85b6e1329
+preflight_darwin_arm64_SHA256SUM=c91ef2a8f9fa346b42b626145646abbb7f8a5aa8f8b39e49c083bd630c875c7d
 
 .PRECIOUS: $(DOWNLOAD_DIR)/tools/preflight@$(PREFLIGHT_VERSION)_$(HOST_OS)_$(HOST_ARCH)
 $(DOWNLOAD_DIR)/tools/preflight@$(PREFLIGHT_VERSION)_$(HOST_OS)_$(HOST_ARCH): | $(DOWNLOAD_DIR)/tools
